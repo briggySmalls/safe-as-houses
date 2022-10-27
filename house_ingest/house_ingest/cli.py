@@ -4,13 +4,16 @@ import sys
 
 import click
 
+from house_ingest.house_ingest import HouseIngestor
+from house_ingest.config import Config
+
 
 @click.command()
 def main():
     """Console script for house_ingest."""
-    click.echo("Replace this message by putting your code into "
-               "house_ingest.cli.main")
-    click.echo("See click documentation at https://click.palletsprojects.com/")
+    config = Config.from_env()
+    hi = HouseIngestor(config)
+    click.echo(hi.scrape())
     return 0
 
 
