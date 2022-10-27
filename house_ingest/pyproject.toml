@@ -27,6 +27,7 @@ packages = [
 python = ">=3.8,<4"
 click = "*"
 rightmove-webscraper = {git = "git@github.com:briggySmalls/rightmove_webscraper.py.git"}
+planparser = {git = "git@github.com:briggySmalls/planparser.git"}
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
