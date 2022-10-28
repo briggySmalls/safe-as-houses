@@ -1,11 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl, AnyHttpUrl
 import os
 from dotenv import dotenv_values
 from pathlib import Path
 
 
 class Config(BaseModel):
-	QUERY_URL: str  # The URL to query for data
+	QUERY_URL: HttpUrl  # The URL to query for data
+	ES_URL: AnyHttpUrl
 
 	@classmethod
 	def from_env(cls) -> "Config":

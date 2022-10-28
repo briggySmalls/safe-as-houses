@@ -30,6 +30,8 @@ rightmove-webscraper = {git = "git@github.com:briggySmalls/rightmove_webscraper.
 planparser = {git = "git@github.com:briggySmalls/planparser.git"}
 pydantic = "^1.10.2"
 python-dotenv = "^0.21.0"
+elasticsearch = "^8.4.3"
+tqdm = "^4.64.1"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"

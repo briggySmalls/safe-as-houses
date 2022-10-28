@@ -157,6 +157,36 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "elastic-transport"
+version = "8.4.0"
+description = "Transport classes and utilities shared among Python Elastic client libraries"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+certifi = "*"
+urllib3 = ">=1.26.2,<2"
+
+[package.extras]
+develop = ["aiohttp", "mock", "pytest", "pytest-asyncio", "pytest-cov", "pytest-httpserver", "pytest-mock", "requests", "trustme"]
+
+[[package]]
+name = "elasticsearch"
+version = "8.4.3"
+description = "Python client for Elasticsearch"
+category = "main"
+optional = false
+python-versions = ">=3.6, <4"
+
+[package.dependencies]
+elastic-transport = ">=8,<9"
+
+[package.extras]
+async = ["aiohttp (>=3,<4)"]
+requests = ["requests (>=2.4.0,<3.0.0)"]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.0.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -716,6 +746,23 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "tqdm"
+version = "4.64.1"
+description = "Fast, Extensible Progress Meter"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+dev = ["py-make (>=0.1.0)", "twine", "wheel"]
+notebook = ["ipywidgets (>=6)"]
+slack = ["slack-sdk"]
+telegram = ["requests"]
+
+[[package]]
 name = "typing-extensions"
 version = "4.4.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -759,7 +806,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4"
-content-hash = "c49e4be2524e5861f64d4ef224aaa9f6d7a3e69863eaa473fc4ed0f65245b4b4"
+content-hash = "d3a209b88a800d23e1703c685cca1d4c0dc54b48506eb28192cc0740257e434f"
 
 [metadata.files]
 alabaster = [
@@ -884,6 +931,14 @@ dill = [
 docutils = [
     {file = "docutils-0.19-py3-none-any.whl", hash = "sha256:5e1de4d849fee02c63b040a4a3fd567f4ab104defd8a5511fbbc24a8a017efbc"},
     {file = "docutils-0.19.tar.gz", hash = "sha256:33995a6753c30b7f577febfc2c50411fec6aac7f7ffeb7c4cfe5991072dcf9e6"},
+]
+elastic-transport = [
+    {file = "elastic-transport-8.4.0.tar.gz", hash = "sha256:b9ad708ceb7fcdbc6b30a96f886609a109f042c0b9d9f2e44403b3133ba7ff10"},
+    {file = "elastic_transport-8.4.0-py3-none-any.whl", hash = "sha256:19db271ab79c9f70f8c43f8f5b5111408781a6176b54ab2e54d713b6d9ceb815"},
+]
+elasticsearch = [
+    {file = "elasticsearch-8.4.3-py3-none-any.whl", hash = "sha256:14c68a96b7bbbf150dd9fca5ff65da9c50e791c0fdba474a328e43828fdd7f42"},
+    {file = "elasticsearch-8.4.3.tar.gz", hash = "sha256:d34d43a6c349d15c9d91840f791eeba80fc50ee070caf6695130f56b7f41a02d"},
 ]
 exceptiongroup = [
     {file = "exceptiongroup-1.0.0-py3-none-any.whl", hash = "sha256:2ac84b496be68464a2da60da518af3785fff8b7ec0d090a581604bc870bdee41"},
@@ -1326,6 +1381,10 @@ tomli = [
 tomlkit = [
     {file = "tomlkit-0.11.6-py3-none-any.whl", hash = "sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b"},
     {file = "tomlkit-0.11.6.tar.gz", hash = "sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73"},
+]
+tqdm = [
+    {file = "tqdm-4.64.1-py2.py3-none-any.whl", hash = "sha256:6fee160d6ffcd1b1c68c65f14c829c22832bc401726335ce92c52d395944a6a1"},
+    {file = "tqdm-4.64.1.tar.gz", hash = "sha256:5f4f682a004951c1b450bc753c710e9280c5746ce6ffedee253ddbcbf54cf1e4"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
