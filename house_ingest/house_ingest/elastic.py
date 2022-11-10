@@ -1,7 +1,6 @@
 from typing import List, Dict, Any
 from tqdm import tqdm
 from elasticsearch import Elasticsearch
-from house_ingest.house_data import HouseData
 from elasticsearch.helpers import streaming_bulk
 
 _INDEX_NAME = "house-index"
@@ -35,7 +34,7 @@ class ElasticClient:
             ignore=400,
         )
 
-    def bulk_index(self, data: List[HouseData]) -> None:
+    def bulk_index(self, data: List[Dict[str, Any]]) -> None:
         # Convert house data to ES format
         docs = [self._convert(h) for h in data]
         progress = tqdm(unit="docs", total=len(docs))
@@ -47,9 +46,7 @@ class ElasticClient:
             successes += ok
         return successes
 
-
     @classmethod
-    def _convert(cls, data: HouseData) -> Dict[str, Any]:
-        return {"_id": data.url, **data.dict()}
-
-
+    def _convert(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        id = data.pop("id")
+        return {"_id": id, **data}
