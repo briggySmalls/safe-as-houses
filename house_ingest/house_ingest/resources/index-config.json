@@ -1,0 +1,88 @@
+{
+  "settings": {"number_of_shards": 1},
+  "mappings": {
+    "properties": {
+      "bathrooms": {
+        "type": "short"
+      },
+      "bedrooms": {
+        "type": "short"
+      },
+      "brochures":  {"type": "keyword"},
+      "description": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "floorplans": {"type": "keyword"},
+      "images": {"type": "keyword"},
+      "key_features": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "location": {"type": "geo_point"},
+      "nearest_stations": {
+        "properties": {
+          "distance": {
+            "type": "float"
+          },
+          "name": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "types": {"type": "keyword"},
+          "unit":  {"type": "keyword"}
+        }
+      },
+      "prices": {
+        "properties": {
+          "amount": {"type": "float"},
+          "currency_code": {"type": "keyword"},
+          "frequency": {"type": "keyword"},
+          "qualifier": {"type": "keyword"}
+        }
+      },
+      "property_phrase": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "share_description": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      }
+    }
+  }
+}

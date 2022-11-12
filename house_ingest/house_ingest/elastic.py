@@ -1,25 +1,14 @@
 from typing import List, Dict, Any
+from pathlib import Path
+import json
 from tqdm import tqdm
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
 
 _INDEX_NAME = "house-index"
-_INDEX_CONFIG = {
-    "settings": {"number_of_shards": 1},
-    "mappings": {
-        "properties": {
-            "price": {"type": "integer"},
-            "type": {"type": "text"},
-            "address": {"type": "text"},
-            "url": {"type": "text"},
-            "agent_url": {"type": "text"},
-            "postcode": {"type": "text"},
-            "full_postcode": {"type": "text"},
-            "bedrooms": {"type": "integer"},
-            "floorplan_url": {"type": "text"}
-        }
-    },
-}
+_ROOT_DIR = Path(__file__).parent
+_RESOURCES_DIR = _ROOT_DIR / "resources"
+_INDEX_CONFIG_FILE = _RESOURCES_DIR / "index-config.json"
 
 
 class ElasticClient:
@@ -28,9 +17,11 @@ class ElasticClient:
 
     def create_index(self):
         """Creates an index in Elasticsearch if one isn't already there."""
+        with _INDEX_CONFIG_FILE.open() as f:
+            index_config = json.load(f)
         self._es.indices.create(
             index=_INDEX_NAME,
-            body=_INDEX_CONFIG,
+            body=index_config,
             ignore=400,
         )
 
