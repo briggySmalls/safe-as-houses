@@ -48,5 +48,12 @@ class ElasticClient:
 
     @classmethod
     def _convert(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        # Pull out an ID
         id = data.pop("id")
+        # Rename location fields to geo_point compatible format
+        old_location = data.pop("location")
+        data["location"] = {
+            "lat": old_location["latitude"],
+            "lon": old_location["longitude"],
+        }
         return {"_id": id, **data}
