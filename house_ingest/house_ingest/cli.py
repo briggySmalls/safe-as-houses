@@ -45,5 +45,12 @@ def execute(ctx, parallelism):
     ctx.obj["ingestor"].index(data)
 
 
+@main.command()
+@click.option('--index-name', help="Override index to targe")
+@click.pass_context
+def create_index(ctx, index_name):
+    ctx.obj["ingestor"].create_index(index_name)
+
+
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover

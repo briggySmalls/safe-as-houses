@@ -17,7 +17,10 @@ class HouseIngestor:
 
     def index(self, data: List[PropertyDetails]) -> None:
         records = self._to_records(data)
-        self._es.bulk_index(records)
+        self._es.bulk_index(records, self._config.INDEX_NAME)
+
+    def create_index(self, index_name=None) -> None:
+        self._es.create_index(self._config.INDEX_NAME if index_name is None else index_name)
 
     @classmethod
     def _to_records(cls, data: List[PropertyDetails]) -> List[Dict[str, Any]]:
