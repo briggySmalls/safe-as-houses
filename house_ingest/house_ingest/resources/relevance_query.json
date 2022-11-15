@@ -1,0 +1,17 @@
+{
+    "sort": [
+    {
+      "_geo_distance": {
+        "location": {
+          "lat": 51.5553,
+          "lon": -0.0921
+        },
+        "order": "asc",
+        "unit": "km",
+        "mode": "min",
+        "distance_type": "arc",
+        "ignore_unmapped": true
+      }
+    }
+  ]
+}
