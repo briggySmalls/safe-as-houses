@@ -579,7 +579,7 @@ pydantic = "^1.10.2"
 type = "git"
 url = "git@github.com:briggySmalls/scrapemove.git"
 reference = "HEAD"
-resolved_reference = "8cc77d80e59eb215df9e1e42cca967357dc3682d"
+resolved_reference = "fe4bbc969e52c8f61ddf421e9dc8d5fbc26430a9"
 
 [[package]]
 name = "snowballstemmer"
