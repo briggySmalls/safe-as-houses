@@ -31,6 +31,17 @@ def search(ctx, output, parallelism):
 
 @main.command()
 @click.argument("input", type=click.File("rb"))
+@click.argument("output", type=click.File("wb"))
+@click.option("--parallelism", default=1)
+@click.pass_context
+def calculate_area(ctx, input, output, parallelism):
+    data = pickle.load(input)
+    data_with_area = ctx.obj["ingestor"].calculate_area(data, parallelism)
+    pickle.dump(data_with_area, output)
+
+
+@main.command()
+@click.argument("input", type=click.File("rb"))
 @click.pass_context
 def index(ctx, input):
     data = pickle.load(input)

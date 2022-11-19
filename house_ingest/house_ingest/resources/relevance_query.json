@@ -1,5 +1,5 @@
 {
-    "sort": [
+  "sort": [
     {
       "_geo_distance": {
         "location": {
@@ -11,6 +11,13 @@
         "mode": "min",
         "distance_type": "arc",
         "ignore_unmapped": true
+      },
+      "_script": {
+        "type": "number",
+        "script": {
+          "inline": "doc['area_sqft'].value * doc['price.amount'].value"
+        },
+        "order": "desc"
       }
     }
   ]
