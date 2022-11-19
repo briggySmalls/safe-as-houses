@@ -1,9 +1,10 @@
-from typing import List, Dict, Any
-from pathlib import Path
 import json
-from tqdm import tqdm
+from pathlib import Path
+from typing import Any, Dict, List
+
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
+from tqdm import tqdm
 
 _ROOT_DIR = Path(__file__).parent
 _RESOURCES_DIR = _ROOT_DIR / "resources"
@@ -34,7 +35,9 @@ class ElasticClient:
         progress = tqdm(unit="docs", total=len(docs))
         successes = 0
         for ok, action in streaming_bulk(
-            client=self._es, index=index_name, actions=docs,
+            client=self._es,
+            index=index_name,
+            actions=docs,
         ):
             progress.update(1)
             successes += ok
