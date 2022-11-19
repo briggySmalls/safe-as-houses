@@ -52,5 +52,13 @@ def create_index(ctx, index_name):
     ctx.obj["ingestor"].create_index(index_name)
 
 
+@main.command()
+@click.pass_context
+@click.argument('source')
+@click.argument('destination')
+def reindex(ctx, source, destination):
+    ctx.obj["ingestor"].reindex(source, destination)
+
+
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover

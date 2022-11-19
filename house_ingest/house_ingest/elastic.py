@@ -24,6 +24,9 @@ class ElasticClient:
             ignore=400,
         )
 
+    def reindex(self, source: str, destination: str) -> None:
+        self._es.reindex(dest={"index": destination}, source={"index": source})
+
     def bulk_index(self, data: List[Dict[str, Any]], index_name: str) -> None:
         # Convert house data to ES format
         docs = [self._convert(h) for h in data]

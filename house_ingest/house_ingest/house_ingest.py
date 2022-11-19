@@ -22,6 +22,9 @@ class HouseIngestor:
     def create_index(self, index_name=None) -> None:
         self._es.create_index(self._config.INDEX_NAME if index_name is None else index_name)
 
+    def reindex(self, source: str, destination: str) -> None:
+        self._es.reindex(source, destination)
+
     @classmethod
     def _to_records(cls, data: List[CombinedDetails]) -> List[Dict[str, Any]]:
         return [d.merged_dict() for d in data]
