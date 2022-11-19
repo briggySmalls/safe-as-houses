@@ -26,12 +26,12 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 click = "*"
-rightmove-webscraper = {git = "git@github.com:briggySmalls/rightmove_webscraper.py.git"}
 planparser = {git = "git@github.com:briggySmalls/planparser.git"}
 pydantic = "^1.10.2"
 python-dotenv = "^0.21.0"
 elasticsearch = "^8.4.3"
 tqdm = "^4.64.1"
+scrapemove = {git = "git@github.com:briggySmalls/scrapemove.git"}
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"

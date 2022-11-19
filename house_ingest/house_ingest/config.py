@@ -7,6 +7,7 @@ from pathlib import Path
 class Config(BaseModel):
 	QUERY_URL: HttpUrl  # The URL to query for data
 	ES_URL: AnyHttpUrl
+	INDEX_NAME: str
 
 	@classmethod
 	def from_env(cls) -> "Config":
