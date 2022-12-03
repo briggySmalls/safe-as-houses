@@ -1,40 +1,45 @@
 package com.hunorkovacs.ziohttp4stry
 
-import zio._
-import zio.console._
-import zio.interop.catz._
-import zio.interop.catz.implicits._
-
+import cats.effect.{ ExitCode => CatsExitCode }
+import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive }
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
+import zio._
+import zio.interop.catz._
+import zio.interop.catz.implicits._
 
-object Main extends App {
+import scala.concurrent.ExecutionContext
 
-  private val dsl = Http4sDsl[Task]
+object Main extends ZIOAppDefault {
+
+  type AppEnvironment = HtmlService
+  type AppTask[A]     = RIO[AppEnvironment, A]
+
+  private val dsl = Http4sDsl[AppTask]
   import dsl._
 
+  private val appEnvironment = HtmlServiceLive.layer
+
   private val helloWorldService = HttpRoutes
-    .of[Task] {
-      case GET -> Root / "hello" => Ok("Hello, Joe")
+    .of[AppTask] {
+      case GET -> Root / "hello" => Ok(HtmlService.getRender("hello"))
     }
     .orNotFound
 
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] =
+  override def run =
     ZIO
-      .runtime[ZEnv]
+      .runtime[AppEnvironment]
+      .provideLayer(appEnvironment)
       .flatMap { implicit runtime =>
-        BlazeServerBuilder[Task](runtime.platform.executor.asEC)
+        BlazeServerBuilder[AppTask](ExecutionContext.global)
           .bindHttp(8080, "localhost")
           .withHttpApp(helloWorldService)
-          .resource
-          .toManagedZIO
-          .useForever
-          .foldCauseM(
-            err => putStrLn(err.prettyPrint).as(ExitCode.failure),
-            _ => ZIO.succeed(ExitCode.success)
-          )
+          .serve
+          .compile[AppTask, AppTask, CatsExitCode]
+          .drain
+          .provideLayer(appEnvironment)
+          .exitCode
       }
-
 }
