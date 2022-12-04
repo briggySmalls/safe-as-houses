@@ -5,6 +5,7 @@ import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive }
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
+import org.http4s.scalatags._
 import org.http4s.server.blaze.BlazeServerBuilder
 import zio._
 import zio.interop.catz._
