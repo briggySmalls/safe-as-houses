@@ -29,7 +29,7 @@ object Main extends ZIOAppDefault {
         Ok(
           HtmlService
             .getRender("hello")
-            .onError(cleanup => zio.Console.printLine(cleanup.prettyPrint).either)
+            .tapError(err => Console.printError(err))
         )
     }
     .orNotFound
