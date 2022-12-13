@@ -2,15 +2,19 @@ package com.hunorkovacs.ziohttp4stry
 
 import cats.effect.{ ExitCode => CatsExitCode }
 import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive, SearchService, SearchServiceLive }
+import org.apache.http.util.ExceptionUtils
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import org.http4s.scalatags._
+
+import java.io.{ PrintWriter, StringWriter }
 import org.http4s.server.blaze.BlazeServerBuilder
 import zio._
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 
+import java.io.PrintWriter
 import scala.concurrent.ExecutionContext
 
 object Main extends ZIOAppDefault {
@@ -29,7 +33,13 @@ object Main extends ZIOAppDefault {
         Ok(
           HtmlService
             .getRender("hello")
-            .tapError(err => Console.printError(err))
+            .tapError { err =>
+              val sw = new StringWriter()
+              val pw = new PrintWriter(sw)
+              err.printStackTrace(pw)
+              val sStackTrace = sw.toString
+              Console.printLineError(sStackTrace)
+            }
         )
     }
     .orNotFound
