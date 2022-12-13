@@ -15,7 +15,7 @@
       "_script": {
         "type": "number",
         "script": {
-          "inline": "doc['area_sqft'].value * doc['price.amount'].value"
+          "inline": "if (doc['area_sqft'].value != 0 && doc['price.amount'].value != 0) return doc['area_sqft'].value * doc['price.amount'].value; return 0"
         },
         "order": "desc"
       }
