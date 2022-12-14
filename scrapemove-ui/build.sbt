@@ -1,5 +1,6 @@
 val Http4sVersion    = "1.0.0-M4"
 val elastic4sVersion = "8.4.3"
+val circeVersion     = "0.14.3"
 
 lazy val root = (project in file("."))
   .settings(
@@ -15,8 +16,15 @@ lazy val root = (project in file("."))
       "dev.zio"                %% "zio"                     % "1.0.17",
       "dev.zio"                %% "zio-interop-cats"        % "22.0.0.0",
       "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion,
-      "com.sksamuel.elastic4s" %% "elastic4s-effect-zio"    % elastic4sVersion
-    )
+      "com.sksamuel.elastic4s" %% "elastic4s-effect-zio"    % elastic4sVersion,
+      "com.sksamuel.elastic4s" %% "elastic4s-json-circe"    % elastic4sVersion,
+      "org.typelevel"          %% "cats-core"               % "2.9.0"
+    ) ++ Seq(
+      "io.circe" %% "circe-core",
+      "io.circe" %% "circe-generic", // Automatic schema derivation
+      "io.circe" %% "circe-generic-extras", // Snake case decoding
+      "io.circe" %% "circe-parser"
+    ).map(_ % circeVersion)
   )
 
 scalacOptions ++= Seq(
@@ -26,5 +34,6 @@ scalacOptions ++= Seq(
   "-language:higherKinds",
   "-language:postfixOps",
   "-feature",
-  "-Xfatal-warnings"
+  "-Xfatal-warnings",
+  "-Ymacro-annotations"
 )

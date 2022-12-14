@@ -1,5 +1,6 @@
 package com.hunorkovacs.ziohttp4stry.services
 
+import com.hunorkovacs.ziohttp4stry.models.PropertyDetails
 import scalatags.Text.TypedTag
 import scalatags.Text.all.{ input, _ }
 import zio.{ RIO, Task, UIO, ULayer, URIO, ZIO, ZLayer }
@@ -22,7 +23,7 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
       html(
         body(
           p(s"Hello: $input"),
-          p(result)
+          result.map(pd => p(pd.title))
         )
       )
     }
