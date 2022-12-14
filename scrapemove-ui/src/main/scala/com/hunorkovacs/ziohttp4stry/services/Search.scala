@@ -39,8 +39,8 @@ class SearchServiceLive extends SearchService {
           search("house-index-4").sortBy(
             geoSort("location") points List(new GeoPoint(51.5553, -0.0921)) order SortOrder.DESC,
             scriptSort(
-              "if (doc['area_sqft'].size() != 0 && doc['price.amount'].size() != 0) return doc['area_sqft'].value * doc['price.amount'].value; return 0"
-            ) typed ScriptSortType.Number order SortOrder.ASC
+              "if (doc['area_sqft'].size() != 0 && doc['price.amount'].size() != 0) return doc['price.amount'].value / doc['area_sqft'].value; return 0"
+            ) typed ScriptSortType.Number order SortOrder.ASC,
           )
         }.map(_.toEither)
           .map(_.left.map(SearchServiceLive.toException))
