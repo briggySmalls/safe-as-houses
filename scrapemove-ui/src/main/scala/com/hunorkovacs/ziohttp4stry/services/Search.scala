@@ -14,6 +14,7 @@ import cats._
 import cats.data._
 import cats.syntax.all._
 import com.sksamuel.elastic4s.circe._
+import com.sksamuel.elastic4s.requests.searches.queries.funcscorer.{FunctionScoreQuery, GaussianDecayScore, ScriptScore}
 
 import scala.util.{Failure, Success}
 
@@ -36,11 +37,25 @@ class SearchServiceLive extends SearchService {
     ZIO
       .absolve(
         client.execute {
-          search("house-index-4").sortBy(
-            geoSort("location") points List(new GeoPoint(51.5553, -0.0921)) order SortOrder.DESC,
-            scriptSort(
-              "if (doc['area_sqft'].size() != 0 && doc['price.amount'].size() != 0) return doc['price.amount'].value / doc['area_sqft'].value; return 0"
-            ) typed ScriptSortType.Number order SortOrder.ASC,
+          search("house-index-4")
+            .query(
+              FunctionScoreQuery(
+                functions = Seq(
+                  GaussianDecayScore(
+                    field="location",
+                    origin="51.5553, -0.0921",
+                    scale="2km",
+                  ),
+                  ScriptScore(
+                    """
+                      |if (doc['area_sqft'].size() != 0 && doc['price.amount'].size() != 0)
+                      | return doc['area_sqft'].value / doc['price.amount'].value;
+                      | return 0
+                      |""".stripMargin,
+                    weight = Some(100)
+                  )
+                )
+              )
           )
         }.map(_.toEither)
           .map(_.left.map(SearchServiceLive.toException))
