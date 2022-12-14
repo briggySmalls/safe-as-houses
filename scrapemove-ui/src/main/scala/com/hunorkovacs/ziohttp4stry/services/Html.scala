@@ -21,9 +21,17 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
       result <- searchService.searchHouses()
     } yield {
       html(
+        head(
+          script(
+            src := "https://cdn.tailwindcss.com"
+          )
+        ),
         body(
-          p(s"Hello: $input"),
-          result.map(pd => p(pd.title))
+          `class` := "bg-slate-900",
+          div(
+            `class` := "flex flex-col gap-4 items-center",
+            result.map(_.present)
+          )
         )
       )
     }
