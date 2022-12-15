@@ -1,5 +1,5 @@
 val Http4sVersion    = "1.0.0-M4"
-val elastic4sVersion = "8.4.3"
+val elastic4sVersion = "8.5.1"
 val circeVersion     = "0.14.3"
 
 lazy val root = (project in file("."))
