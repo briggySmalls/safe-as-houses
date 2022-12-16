@@ -1,0 +1,10 @@
+# target directory for build
+/build/
+
+# intellij
+/.bsp/
+/.idea/
+
+# sbt's target directories
+/target/
+/project/**/target/

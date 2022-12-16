@@ -53,7 +53,8 @@ def index(ctx, input):
 @click.pass_context
 def execute(ctx, parallelism):
     data = ctx.obj["ingestor"].scrape(parallelism)
-    ctx.obj["ingestor"].index(data)
+    data_with_area = ctx.obj["ingestor"].calculate_area(data, parallelism)
+    ctx.obj["ingestor"].index(data_with_area)
 
 
 @main.command()
