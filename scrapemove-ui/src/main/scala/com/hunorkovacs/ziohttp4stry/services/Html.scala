@@ -6,31 +6,45 @@ import scalatags.Text.all.{ input, _ }
 import zio.{ RIO, Task, UIO, ULayer, URIO, ZIO, ZLayer }
 
 trait HtmlService {
-  def render(input: String): Task[TypedTag[String]]
+  def render(from: Int): Task[TypedTag[String]]
 }
 
 object HtmlService {
-  def getRender(input: String): RIO[HtmlService, TypedTag[String]] =
-    ZIO.serviceWithZIO[HtmlService](_.render(input))
+  def getRender(from: Int = 0): RIO[HtmlService, TypedTag[String]] =
+    ZIO.serviceWithZIO[HtmlService](_.render(from))
 }
 
 class HtmlServiceLive(searchService: SearchService) extends HtmlService {
-  override def render(input: String): Task[TypedTag[String]] =
+  override def render(from: Int): Task[TypedTag[String]] =
     for {
       _      <- zio.Console.printLine("Starting render!")
-      result <- searchService.searchHouses()
+      result <- searchService.searchHouses(from)
+      newFrom = from + result.size
+      components = result.map(_.present) match {
+        case init :+ last =>
+          init :+ last(
+            attr("hx-get") := s"/api/v1/properties?from=$newFrom",
+            attr("hx-trigger") := "revealed",
+            attr("hx-swap") := "afterend"
+          )
+      }
     } yield {
       html(
         head(
           script(
             src := "https://cdn.tailwindcss.com"
+          ),
+          script(
+            src := "https://unpkg.com/htmx.org@1.8.4",
+            integrity := "sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV",
+            crossorigin := "anonymous"
           )
         ),
         body(
           `class` := "bg-slate-900",
           div(
             `class` := "flex flex-col gap-4 items-center",
-            result.map(_.present)
+            components
           )
         )
       )

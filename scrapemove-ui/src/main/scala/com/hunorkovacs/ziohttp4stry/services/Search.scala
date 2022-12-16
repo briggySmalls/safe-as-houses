@@ -19,25 +19,26 @@ import com.sksamuel.elastic4s.requests.searches.queries.funcscorer.{FunctionScor
 import scala.util.{Failure, Success}
 
 trait SearchService {
-  def searchHouses(): Task[Seq[PropertyDetails]]
+  def searchHouses(from: Int): Task[Seq[PropertyDetails]]
 }
 
 class SearchServiceLive extends SearchService {
   val props  = ElasticProperties("http://localhost:9200")
   val client = ElasticClient(JavaClient(props))
 
-  override def searchHouses(): Task[Seq[PropertyDetails]] =
+  override def searchHouses(from: Int): Task[Seq[PropertyDetails]] =
     for {
       _      <- zio.Console.printLine("starting search")
-      result <- searchInternal()
+      result <- searchInternal(from)
       _      <- zio.Console.printLine("search complete")
     } yield result
 
-  private def searchInternal(): Task[Seq[PropertyDetails]] =
+  private def searchInternal(from: Int): Task[Seq[PropertyDetails]] =
     ZIO
       .absolve(
         client.execute {
           search("house-index-4")
+            .from(from)
             .query(
               FunctionScoreQuery(
                 functions = Seq(

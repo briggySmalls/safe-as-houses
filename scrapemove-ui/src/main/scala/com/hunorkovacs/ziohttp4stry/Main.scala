@@ -5,17 +5,20 @@ import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive, Sea
 import org.apache.http.util.ExceptionUtils
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
+import org.http4s.dsl.io._
 import org.http4s.implicits._
 import org.http4s.scalatags._
 
-import java.io.{ PrintWriter, StringWriter }
+import java.io.{ IOException, PrintWriter, StringWriter }
 import org.http4s.server.blaze.BlazeServerBuilder
 import zio._
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 
-import java.io.PrintWriter
+import java.time.Year
 import scala.concurrent.ExecutionContext
+
+object FromQueryParamMatcher extends QueryParamDecoderMatcher[Int]("from")
 
 object Main extends ZIOAppDefault {
 
@@ -32,14 +35,14 @@ object Main extends ZIOAppDefault {
       case GET -> Root / "hello" =>
         Ok(
           HtmlService
-            .getRender("hello")
-            .tapError { err =>
-              val sw = new StringWriter()
-              val pw = new PrintWriter(sw)
-              err.printStackTrace(pw)
-              val sStackTrace = sw.toString
-              Console.printLineError(sStackTrace)
-            }
+            .getRender()
+            .tapError(err => printError(err))
+        )
+      case GET -> Root / "api" / "v1" / "properties" :? FromQueryParamMatcher(from) =>
+        Ok(
+          HtmlService
+            .getRender(from)
+            .tapError(err => printError(err))
         )
     }
     .orNotFound
@@ -64,4 +67,12 @@ object Main extends ZIOAppDefault {
           )
           .exitCode
       }
+
+  private def printError(err: Throwable): IO[IOException, Unit] = {
+    val sw = new StringWriter()
+    val pw = new PrintWriter(sw)
+    err.printStackTrace(pw)
+    val sStackTrace = sw.toString
+    Console.printLineError(sStackTrace)
+  }
 }
