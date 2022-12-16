@@ -57,7 +57,6 @@ class HouseIngestor:
 
     def index(self, data: List[IndexData]) -> None:
         records = self._to_records(data)
-        breakpoint()
         self._es.bulk_index(records, self._config.INDEX_NAME)
 
     def create_index(self, index_name=None) -> None:
