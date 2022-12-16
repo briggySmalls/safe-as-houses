@@ -32,7 +32,7 @@ object Main extends ZIOAppDefault {
 
   private val helloWorldService = HttpRoutes
     .of[AppTask] {
-      case GET -> Root / "hello" =>
+      case GET -> Root =>
         Ok(
           HtmlService
             .getRender()
