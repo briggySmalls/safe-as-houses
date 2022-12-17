@@ -35,13 +35,13 @@ object Main extends ZIOAppDefault {
       case GET -> Root =>
         Ok(
           HtmlService
-            .getRender()
+            .getRenderPage()
             .tapError(err => printError(err))
         )
       case GET -> Root / "api" / "v1" / "properties" :? FromQueryParamMatcher(from) =>
         Ok(
           HtmlService
-            .getRender(from)
+            .getRenderItems(from)
             .tapError(err => printError(err))
         )
     }
