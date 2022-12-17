@@ -8,21 +8,21 @@ import zio.{ RIO, Task, UIO, ULayer, URIO, ZIO, ZLayer }
 trait HtmlService {
   def renderPage(): Task[TypedTag[String]]
 
-  def renderItems(from: Int): Task[TypedTag[String]]
+  def renderItems(from: Int): Task[Seq[TypedTag[String]]]
 }
 
 object HtmlService {
   def getRenderPage(): RIO[HtmlService, TypedTag[String]] =
     ZIO.serviceWithZIO[HtmlService](_.renderPage())
 
-  def getRenderItems(from: Int = 0): RIO[HtmlService, TypedTag[String]] =
+  def getRenderItems(from: Int = 0): RIO[HtmlService, Seq[TypedTag[String]]] =
     ZIO.serviceWithZIO[HtmlService](_.renderItems(from))
 }
 
 class HtmlServiceLive(searchService: SearchService) extends HtmlService {
   override def renderPage(): Task[TypedTag[String]] =
     for {
-      pageOfItems <- renderItems(0)
+      items <- renderItems(0)
     } yield html(
       head(
         script(
@@ -36,11 +36,14 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
       ),
       body(
         `class` := "bg-slate-900",
-        pageOfItems
+        div(
+          `class` := "flex flex-col gap-4 items-center",
+          items
+        )
       )
     )
 
-  override def renderItems(from: Int): Task[TypedTag[String]] =
+  override def renderItems(from: Int): Task[Seq[TypedTag[String]]] =
     for {
       _      <- zio.Console.printLine("Starting render!")
       result <- searchService.searchHouses(from)
@@ -54,10 +57,7 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
             attr("hx-swap") := "afterend"
           )
       }
-    } yield div(
-      `class` := "flex flex-col gap-4 items-center",
-      components
-    )
+    } yield components
 }
 
 object HtmlServiceLive {

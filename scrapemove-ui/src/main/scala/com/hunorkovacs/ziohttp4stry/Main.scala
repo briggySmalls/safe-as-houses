@@ -42,6 +42,7 @@ object Main extends ZIOAppDefault {
         Ok(
           HtmlService
             .getRenderItems(from)
+            .map(_.map(_.render).mkString(""))
             .tapError(err => printError(err))
         )
     }
