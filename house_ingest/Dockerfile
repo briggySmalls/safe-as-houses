@@ -14,6 +14,10 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=1.2.2
 
 RUN apk add --no-cache gcc libffi-dev musl-dev git openssh
+# Pillow dependencies
+RUN apk add tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
+    libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
+    libxcb-dev libpng-dev python3-dev py3-setuptools
 RUN pip install "poetry==$POETRY_VERSION"
 RUN python -m venv /venv
 
@@ -25,5 +29,10 @@ RUN poetry build && /venv/bin/pip install dist/*.whl
 
 FROM base as final
 
+RUN apk add tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
+    libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
+    libxcb-dev libpng-dev
+
 COPY --from=builder /venv /venv
-CMD ["houseingest"]
+COPY scripts/docker-entrypoint.sh ./
+CMD ["./docker-entrypoint.sh"]
