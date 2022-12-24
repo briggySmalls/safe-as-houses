@@ -387,7 +387,7 @@ pytesseract = "^0.3.10"
 
 [package.source]
 type = "git"
-url = "git@github.com:briggySmalls/planparser.git"
+url = "https://github.com/briggySmalls/planparser.git"
 reference = "HEAD"
 resolved_reference = "5edfbca07e4258bc1eabf7260b63e8c42172c7d8"
 
@@ -577,7 +577,7 @@ pydantic = "^1.10.2"
 
 [package.source]
 type = "git"
-url = "git@github.com:briggySmalls/scrapemove.git"
+url = "https://github.com/briggySmalls/scrapemove.git"
 reference = "HEAD"
 resolved_reference = "99e084f5143bf46a62a9a150088254d5db0efc79"
 
@@ -777,7 +777,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4"
-content-hash = "3b64650d26881f68c34334211abeb41f041e169962ca977aa0bd049ccb2a842a"
+content-hash = "561b7315a6856d7f8eefc85e9d8bc49c832587dcba3114d14e5cc23a3756084a"
 
 [metadata.files]
 alabaster = [
