@@ -115,7 +115,7 @@ python-versions = ">=3.6"
 name = "charset-normalizer"
 version = "2.1.1"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6.0"
 
@@ -229,7 +229,7 @@ pyflakes = ">=2.5.0,<2.6.0"
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -387,7 +387,7 @@ pytesseract = "^0.3.10"
 
 [package.source]
 type = "git"
-url = "git@github.com:briggySmalls/planparser.git"
+url = "https://github.com/briggySmalls/planparser.git"
 reference = "HEAD"
 resolved_reference = "5edfbca07e4258bc1eabf7260b63e8c42172c7d8"
 
@@ -546,7 +546,7 @@ python-versions = "*"
 name = "requests"
 version = "2.28.1"
 description = "Python HTTP for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7, <4"
 
@@ -574,12 +574,13 @@ beautifulsoup4 = "^4.11.1"
 click = "*"
 inflection = "^0.5.1"
 pydantic = "^1.10.2"
+requests = "^2.28.1"
 
 [package.source]
 type = "git"
-url = "git@github.com:briggySmalls/scrapemove.git"
-reference = "HEAD"
-resolved_reference = "99e084f5143bf46a62a9a150088254d5db0efc79"
+url = "https://github.com/briggySmalls/scrapemove.git"
+reference = "master"
+resolved_reference = "61726b7be1360f76130a1353c90fd0968b7b8241"
 
 [[package]]
 name = "snowballstemmer"
@@ -777,7 +778,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4"
-content-hash = "3b64650d26881f68c34334211abeb41f041e169962ca977aa0bd049ccb2a842a"
+content-hash = "44d3df1ba7304937ad393c1b7da5aab39a004a0c23206262c98f676f573917c8"
 
 [metadata.files]
 alabaster = [
