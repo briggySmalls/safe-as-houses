@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: safeashouses-ingest
+  labels:
+    app: safeashouses
+spec:
+  schedule: "0 8 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: safeashouses-ingest
+              image: briggysmalls/safeashouses-ingest:latest
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - configMapRef:
+                    name: safeashouses-ingest-config
+          restartPolicy: OnFailure
