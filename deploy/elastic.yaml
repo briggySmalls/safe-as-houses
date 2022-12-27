@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: safeashouses-elastic
+  labels:
+    app: safeashouses
+spec:
+  ports:
+    - port: 9200
+      name: api
+    - port: 9300
+      name: cluster
+  selector:
+    app: safeashouses
+    tier: elastic
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elastic-pv-claim
+  labels:
+    app: safeashouses
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: safeashouses-elastic
+  labels:
+    app: safeashouses
+spec:
+  selector:
+    matchLabels:
+      app: safeashouses
+      tier: elastic
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: safeashouses
+        tier: elastic
+    spec:
+      containers:
+      - image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
+        name: elasticsearch
+        env:
+        - name: xpack.security.enabled
+          value: "false"
+        - name: discovery.type
+          value: "single-node"
+        ports:
+        - containerPort: 9200
+          name: api
+        - containerPort: 9300
+          name: cluster
+        volumeMounts:
+        - name: elastic-persistent-storage
+          mountPath: /usr/share/elasticsearch/data
+      volumes:
+      - name: elastic-persistent-storage
+        persistentVolumeClaim:
+          claimName: elastic-pv-claim
