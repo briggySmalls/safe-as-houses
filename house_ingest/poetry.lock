@@ -374,22 +374,15 @@ tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "pa
 
 [[package]]
 name = "planparser"
-version = "0.1.0"
+version = "0.1.0b0"
 description = "Top-level package for planparser."
 category = "main"
 optional = false
 python-versions = ">=3.7,<4"
-develop = false
 
 [package.dependencies]
 click = "*"
-pytesseract = "^0.3.10"
-
-[package.source]
-type = "git"
-url = "https://github.com/briggySmalls/planparser.git"
-reference = "HEAD"
-resolved_reference = "5edfbca07e4258bc1eabf7260b63e8c42172c7d8"
+pytesseract = ">=0.3.10,<0.4.0"
 
 [[package]]
 name = "platformdirs"
@@ -778,7 +771,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4"
-content-hash = "44d3df1ba7304937ad393c1b7da5aab39a004a0c23206262c98f676f573917c8"
+content-hash = "e772833c6cb8701d76e5a57529f1279e1a7ba320aff364b7dc6f9f702084111c"
 
 [metadata.files]
 alabaster = [
@@ -1095,7 +1088,10 @@ pillow = [
     {file = "Pillow-9.2.0-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:0030fdbd926fb85844b8b92e2f9449ba89607231d3dd597a21ae72dc7fe26927"},
     {file = "Pillow-9.2.0.tar.gz", hash = "sha256:75e636fd3e0fb872693f23ccb8a5ff2cd578801251f3a4f6854c6a5d437d3c04"},
 ]
-planparser = []
+planparser = [
+    {file = "planparser-0.1.0b0-py3-none-any.whl", hash = "sha256:98da8b5be5726df75d53238d1393ece3fabbc06257461d4e94b7de12a0dceb72"},
+    {file = "planparser-0.1.0b0.tar.gz", hash = "sha256:834f6e0bdebd7f1e820ae597d5aaf9e8fb60ab4c96c425916f91f5136f7d2e76"},
+]
 platformdirs = [
     {file = "platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
     {file = "platformdirs-2.5.2.tar.gz", hash = "sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19"},
