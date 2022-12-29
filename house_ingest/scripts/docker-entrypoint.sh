@@ -3,4 +3,4 @@
 set -e
 
 . /venv/bin/activate
-houseingest
+houseingest execute --parallelism "${PARALLELISM:-10}"
