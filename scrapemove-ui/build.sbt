@@ -37,3 +37,8 @@ scalacOptions ++= Seq(
   "-Xfatal-warnings",
   "-Ymacro-annotations"
 )
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", _*) => MergeStrategy.discard
+  case _                        => MergeStrategy.first
+}
