@@ -9,10 +9,10 @@ import com.sksamuel.elastic4s.requests.searches.{GeoPoint, SearchResponse}
 import com.sksamuel.elastic4s.requests.searches.sort.{ScriptSortType, SortOrder}
 import com.sksamuel.elastic4s.zio.instances._
 import zio.{Task, ULayer, ZIO, ZLayer}
-import com.hunorkovacs.ziohttp4stry.utils.Extensions._
 import cats._
 import cats.data._
 import cats.syntax.all._
+import com.hunorkovacs.ziohttp4stry.config.Settings
 import com.sksamuel.elastic4s.circe._
 import com.sksamuel.elastic4s.requests.searches.queries.funcscorer.{FunctionScoreQuery, GaussianDecayScore, ScriptScore}
 
@@ -22,8 +22,8 @@ trait SearchService {
   def searchHouses(from: Int): Task[Seq[PropertyDetails]]
 }
 
-class SearchServiceLive extends SearchService {
-  val props  = ElasticProperties("http://localhost:9200")
+class SearchServiceLive(settings: Settings) extends SearchService {
+  val props  = ElasticProperties(settings.elasticSettings.url)
   val client = ElasticClient(JavaClient(props))
 
   override def searchHouses(from: Int): Task[Seq[PropertyDetails]] =
@@ -37,7 +37,7 @@ class SearchServiceLive extends SearchService {
     ZIO
       .absolve(
         client.execute {
-          search("house-index-4")
+          search(settings.elasticSettings.index)
             .from(from)
             .query(
               FunctionScoreQuery(
@@ -72,10 +72,10 @@ class SearchServiceLive extends SearchService {
 }
 
 object SearchServiceLive {
-  def layer: ULayer[SearchServiceLive] = ZLayer.succeed {
-    val s = new SearchServiceLive
-    Console.println("Search service constructed!")
-    s
+  def layer: ZLayer[Settings, Nothing, SearchServiceLive] = ZLayer {
+    for {
+      settings <- ZIO.service[Settings]
+    } yield new SearchServiceLive(settings)
   }
 
   def toException(err: ElasticError): Exception =
