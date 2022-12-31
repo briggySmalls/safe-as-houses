@@ -12,8 +12,7 @@ spec:
         spec:
           containers:
             - name: safeashouses-ingest
-              image: briggysmalls/safeashouses-ingest:latest
-              imagePullPolicy: IfNotPresent
+              image: briggysmalls/safeashouses-ingest
               envFrom:
                 - configMapRef:
                     name: safeashouses-ingest-config
