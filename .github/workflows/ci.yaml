@@ -1,0 +1,18 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-server:
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      directory: scrapemove-ui
+      image-name: safeashouses-ui
+    secrets: inherit
+
+  build-ingest:
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      directory: house_ingest
+      image-name: safeashouses-ingest
+    secrets: inherit
