@@ -9,3 +9,15 @@ data:
   QUERY_URL: https://www.rightmove.co.uk/property-for-sale/find.html?searchType=SALE&locationIdentifier=REGION%5E70438&insId=1&radius=0.0&minPrice=800000&maxPrice=1250000&minBedrooms=&maxBedrooms=&displayPropertyType=&maxDaysSinceAdded=&_includeSSTC=on&sortByPriceDescending=&primaryDisplayPropertyType=&secondaryDisplayPropertyType=&oldDisplayPropertyType=&oldPrimaryDisplayPropertyType=&newHome=&auction=false
   INDEX_NAME: house-index-2
   PARALLELISM: "10"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: safeashouses-server-config
+  labels:
+    app: safeashouses
+data:
+  SCRAPEMOVE_ES_URL: http://safeashouses-elastic:9200
+  SCRAPEMOVE_ES_INDEX: house-index-2
+  SCRAPEMOVE_SERVER_HOST: 0.0.0.0
+  SCRAPEMOVE_SERVER_PORT: "80"
