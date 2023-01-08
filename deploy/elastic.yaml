@@ -27,6 +27,7 @@ spec:
   resources:
     requests:
       storage: 20Gi
+  storageClassName: microk8s-hostpath
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -63,6 +64,13 @@ spec:
         volumeMounts:
         - name: elastic-persistent-storage
           mountPath: /usr/share/elasticsearch/data
+        resources:
+          requests:
+            memory: 3Gi
+            cpu: 1
+          limits:
+            memory: 3Gi
+            cpu: 1
       volumes:
       - name: elastic-persistent-storage
         persistentVolumeClaim:
