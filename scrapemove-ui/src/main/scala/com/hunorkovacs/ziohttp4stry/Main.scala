@@ -1,6 +1,7 @@
 package com.hunorkovacs.ziohttp4stry
 
 import cats.effect.{ ExitCode => CatsExitCode }
+import com.hunorkovacs.ziohttp4stry.config.Settings
 import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive, SearchService, SearchServiceLive }
 import org.apache.http.util.ExceptionUtils
 import org.http4s._
@@ -22,13 +23,13 @@ object FromQueryParamMatcher extends QueryParamDecoderMatcher[Int]("from")
 
 object Main extends ZIOAppDefault {
 
-  type AppEnvironment = SearchService with HtmlService
+  type AppEnvironment = SearchService with HtmlService with Settings
   type AppTask[A]     = RIO[AppEnvironment, A]
 
   private val dsl = Http4sDsl[AppTask]
   import dsl._
 
-  private val appEnvironment = SearchServiceLive.layer ++ HtmlServiceLive.layer
+  private val appEnvironment = SearchServiceLive.layer ++ HtmlServiceLive.layer ++ Settings.layer
 
   private val helloWorldService = HttpRoutes
     .of[AppTask] {
@@ -48,26 +49,25 @@ object Main extends ZIOAppDefault {
     }
     .orNotFound
 
-  override def run =
-    ZIO
-      .runtime[AppEnvironment]
-      .provide(
-        HtmlServiceLive.layer,
-        SearchServiceLive.layer
-      )
-      .flatMap { implicit runtime =>
+  def server =
+    for {
+      settings <- ZIO.service[Settings]
+      server <- ZIO.runtime[AppEnvironment].flatMap { implicit runtime =>
         BlazeServerBuilder[AppTask](ExecutionContext.global)
-          .bindHttp(8080, "localhost")
+          .bindHttp(settings.serverSettings.port, settings.serverSettings.host)
           .withHttpApp(helloWorldService)
           .serve
           .compile[AppTask, AppTask, CatsExitCode]
           .drain
-          .provide(
-            HtmlServiceLive.layer,
-            SearchServiceLive.layer
-          )
           .exitCode
       }
+    } yield server
+
+  override def run = server.provide(
+    HtmlServiceLive.layer,
+    SearchServiceLive.layer,
+    Settings.layer
+  )
 
   private def printError(err: Throwable): IO[IOException, Unit] = {
     val sw = new StringWriter()

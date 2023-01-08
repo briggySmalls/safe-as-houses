@@ -31,7 +31,7 @@ FROM base as final
 
 RUN apk add tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
     libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
-    libxcb-dev libpng-dev
+    libxcb-dev libpng-dev tesseract-ocr
 
 COPY --from=builder /venv /venv
 COPY scripts/docker-entrypoint.sh ./

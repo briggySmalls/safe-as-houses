@@ -3,4 +3,7 @@
 set -e
 
 . /venv/bin/activate
-houseingest
+# Ensure the index has been created (configures the mappings)
+houseingest create-index
+# Index
+houseingest execute --parallelism "${PARALLELISM:-10}"
