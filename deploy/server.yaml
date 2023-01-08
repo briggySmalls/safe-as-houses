@@ -34,7 +34,7 @@ spec:
         tier: server
     spec:
       containers:
-      - image: docker.io/briggysmalls/safeashouses-ui
+      - image: docker.io/briggysmalls/safeashouses-ui:50c29144
         name: safeashouses-server
         ports:
           - containerPort: 80
