@@ -12,8 +12,10 @@ import scalatags.Text.TypedTag
 import scalatags.Text.all.{ input, _ }
 import cats.implicits._
 
-import java.time.Instant
+import java.time.{ Duration, Instant }
+import java.time.temporal.{ TemporalAmount, TemporalUnit }
 import java.util.{ Currency, Locale }
+import scala.concurrent.duration.{ DAYS, DurationInt }
 
 @ConfiguredJsonCodec
 case class PropertyDetails(
@@ -65,7 +67,7 @@ case class PropertyDetails(
           `class` := "flex flex-col justify-between p-4 leading-normal text-gray-700 dark:text-gray-400",
           h5(
             `class` := "mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white",
-            displayAddress
+            titleMarkup
           ),
           p(
             `class` := "mb-3 font-normal",
@@ -93,6 +95,22 @@ case class PropertyDetails(
       components
     )
   }
+
+  def titleMarkup: Seq[TypedTag[String]] =
+    Seq(
+      displayAddress.map(span(_)),
+      if (isListedInPast(Duration.ofDays(3)))
+        Some(
+          span(
+            `class` := "bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300",
+            "Past 3 days!"
+          )
+        )
+      else
+        None
+    ).flatten
+
+  def isListedInPast(duration: Duration): Boolean = firstVisibleDate.isAfter(Instant.now().minus(duration))
 
   private def attributes = {
 
