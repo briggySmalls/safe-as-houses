@@ -6,8 +6,8 @@ metadata:
     app: safeashouses
 data:
   ES_URL: http://safeashouses-elastic:9200
-  QUERY_URL: https://www.rightmove.co.uk/property-for-sale/find.html?minBedrooms=2&keywords=&sortType=2&minPrice=800000&viewType=LIST&channel=BUY&index=0&maxPrice=1500000&radius=0.0&locationIdentifier=USERDEFINEDAREA%5E%7B%22id%22%3A%228084083%22%7D
   INDEX_NAME: house-index-2
+  QUERY_URL: https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=USERDEFINEDAREA%5E%7B%22id%22%3A%228084083%22%7D&minBedrooms=2&maxPrice=1750000&minPrice=800000&propertyTypes=&mustHave=&dontShow=&furnishTypes=&keywords=
   PARALLELISM: "3"
 ---
 apiVersion: v1
