@@ -14,7 +14,9 @@ import cats.data._
 import cats.syntax.all._
 import com.hunorkovacs.ziohttp4stry.config.Settings
 import com.sksamuel.elastic4s.circe._
+import com.sksamuel.elastic4s.requests.searches.queries.{RankFeatureQuery, ScriptScoreQuery}
 import com.sksamuel.elastic4s.requests.searches.queries.funcscorer.{FunctionScoreQuery, GaussianDecayScore, ScriptScore}
+import com.sksamuel.elastic4s.requests.searches.queries.geo.GeoDistanceQuery
 
 import scala.util.{Failure, Success}
 
@@ -40,23 +42,20 @@ class SearchServiceLive(settings: Settings) extends SearchService {
           search(settings.elasticSettings.index)
             .from(from)
             .query(
-              FunctionScoreQuery(
-                functions = Seq(
-                  GaussianDecayScore(
-                    field="location",
-                    origin="51.5553, -0.0921",
-                    scale="2km",
+                should(
+                  FunctionScoreQuery(
+                    functions = Seq(
+                      GaussianDecayScore(
+                        field = "location",
+                        origin = "51.5553, -0.0921",
+                        scale = "2km"
+                      )
+                    )
                   ),
-                  ScriptScore(
-                    """
-                      |if (doc['area_sqft'].size() != 0 && doc['price.amount'].size() != 0)
-                      | return doc['area_sqft'].value / doc['price.amount'].value;
-                      | return 0
-                      |""".stripMargin,
-                    weight = Some(100)
+                  RankFeatureQuery(
+                    "price_per_sqft"
                   )
                 )
-              )
           )
         }.map(_.toEither)
           .map(_.left.map(SearchServiceLive.toException))
