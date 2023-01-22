@@ -12,12 +12,14 @@ import org.http4s.scalatags._
 
 import java.io.{ IOException, PrintWriter, StringWriter }
 import org.http4s.server.blaze.BlazeServerBuilder
+import zio.Cause.Die
 import zio._
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 
 import java.time.Year
 import scala.concurrent.ExecutionContext
+import utils.Extensions._
 
 object FromQueryParamMatcher extends QueryParamDecoderMatcher[Int]("from")
 
@@ -37,14 +39,14 @@ object Main extends ZIOAppDefault {
         Ok(
           HtmlService
             .getRenderPage()
-            .tapError(err => printError(err))
+            .logIssues()
         )
       case GET -> Root / "api" / "v1" / "properties" :? FromQueryParamMatcher(from) =>
         Ok(
           HtmlService
             .getRenderItems(from)
             .map(_.map(_.render).mkString(""))
-            .tapError(err => printError(err))
+            .logIssues()
         )
     }
     .orNotFound
