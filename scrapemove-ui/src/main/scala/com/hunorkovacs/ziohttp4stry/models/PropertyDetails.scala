@@ -58,15 +58,27 @@ case class PropertyDetails(
     val components = Seq(
       images.headOption.map(url =>
         img(
-          `class` := "object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg",
+          `class` :=
+            """
+              |object-cover w-full rounded-t-lg
+              |md:w-1/5 md:h-full md:rounded-none md:rounded-l-lg
+              |""".stripMargin,
           src := url
         )
       ),
       Some(
         div(
-          `class` := "flex flex-col justify-between p-4 leading-normal text-gray-700 dark:text-gray-400",
+          `class` :=
+            """
+              |flex flex-col justify-between p-4 leading-normal
+              |w-full
+              |text-gray-700 dark:text-gray-400
+              |""".stripMargin,
           h5(
-            `class` := "mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white",
+            `class` :=
+              """
+                |mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white
+                |""".stripMargin,
             titleMarkup
           ),
           p(
@@ -87,9 +99,9 @@ case class PropertyDetails(
       `class` :=
         """
           |flex flex-col items-center
-          |border rounded-lg shadow-md
+          |border rounded-lg shadow
           |md:flex-row md:max-w-6xl
-          |bg-white hover:bg-gray-100 visited:bg-gray-50
+          |bg-white border-gray-200 hover:bg-gray-100 visited:bg-gray-50
           |dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:visited:bg-gray-600
           |""".stripMargin,
       components
@@ -121,11 +133,12 @@ case class PropertyDetails(
       "Bathrooms" -> bathrooms,
       "Bedrooms"  -> Some(bedrooms)
     )
-    attributes.collect { case (key, Some(value)) => key -> value }.map {
+    attributes.map {
       case (key, value) =>
+        val v = value.map(_.toString).getOrElse("?")
         div(
           span(`class` := "mr-1", s"$key:"),
-          span(value.toString)
+          span(v)
         )
     }
   }
