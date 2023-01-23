@@ -10,8 +10,8 @@ class IndexData(BaseModel):
 
     @property
     def price_per_sqft(self):
-        if area_sqft:
-            return scraped.price.amount / area_sqft
+        if self.area_sqft:
+            return self.scraped.property.price.amount / self.area_sqft
         else:
             return float('inf')
 
@@ -19,5 +19,5 @@ class IndexData(BaseModel):
         return {
             **self.scraped.merged_dict(),
             "area_sqft": self.area_sqft,
-            "price_per_sqft": self.area_sqft,
+            "price_per_sqft": self.price_per_sqft,
         }
