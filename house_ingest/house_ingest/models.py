@@ -4,6 +4,9 @@ from pydantic import BaseModel
 from scrapemove.models import CombinedDetails
 
 
+_DEFAULT_PRICE_PER_SQFT = 10000.0
+
+
 class IndexData(BaseModel):
     scraped: CombinedDetails
     area_sqft: Optional[float]
@@ -13,7 +16,7 @@ class IndexData(BaseModel):
         if self.area_sqft:
             return self.scraped.property.price.amount / self.area_sqft
         else:
-            return float('inf')
+            return _DEFAULT_PRICE_PER_SQFT
 
     def merged_dict(self):
         return {

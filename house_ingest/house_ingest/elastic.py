@@ -28,20 +28,9 @@ class ElasticClient:
     def reindex(self, source: str, destination: str) -> None:
         self._es.reindex(dest={"index": destination}, source={"index": source})
 
-    def bulk_index(self, data: List[Dict[str, Any]], index_name: str) -> None:
-        # Convert house data to ES format
-        docs = [self._convert(h) for h in data]
-        print(f"Indexing {len(docs)} docs into {index_name}")
-        progress = tqdm(unit="docs", total=len(docs))
-        successes = 0
-        for ok, action in streaming_bulk(
-            client=self._es,
-            index=index_name,
-            actions=docs,
-        ):
-            progress.update(1)
-            successes += ok
-        return successes
+    def index(self, index: str, data: Dict[str, Any]) -> None:
+        id, doc = self._convert(data)
+        return self._es.index(index=index, id=id, document=doc)
 
     @classmethod
     def _convert(cls, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -53,4 +42,4 @@ class ElasticClient:
             "lat": old_location["latitude"],
             "lon": old_location["longitude"],
         }
-        return {"_id": id, **data}
+        return id, data

@@ -38,11 +38,16 @@ def _calculate_area(data: CombinedDetails) -> IndexData:
     return IndexData(scraped=data, area_sqft=area)
 
 
-def iterate(d: CombinedDetails, progress) -> IndexData:
-    result = _calculate_area(d)
+def _index(index: str, data: IndexData, client: ElasticClient) -> None:
+    record = data.merged_dict()
+    client.index(index=index, data=record)
+
+
+def iterate(index:str, data: CombinedDetails, client: ElasticClient, progress) -> IndexData:
+    result = _calculate_area(data)
+    _index(index, result, client)
     progress.update(1)
     return result
-
 
 
 class HouseIngestor:
@@ -61,9 +66,10 @@ class HouseIngestor:
         with ThreadPool(parallelism) as p:
             return p.starmap(iterate, zip(data, repeat(progress)))
 
-    def index(self, data: List[IndexData]) -> None:
-        records = self._to_records(data)
-        self._es.bulk_index(records, self._config.INDEX_NAME)
+    def execute(self, data: List[CombinedDetails], parallelism: int=1) -> None:
+        progress = tqdm(unit="properties", total=len(data), disable=None)
+        with ThreadPool(parallelism) as p:
+            return p.starmap(iterate, zip(repeat(self._config.INDEX_NAME), data, repeat(self._es), repeat(progress)))
 
     def create_index(self, index_name=None) -> None:
         self._es.create_index(
@@ -73,6 +79,3 @@ class HouseIngestor:
     def reindex(self, source: str, destination: str) -> None:
         self._es.reindex(source, destination)
 
-    @classmethod
-    def _to_records(cls, data: List[IndexData]) -> List[Dict[str, Any]]:
-        return [d.merged_dict() for d in data]

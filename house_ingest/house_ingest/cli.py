@@ -8,7 +8,6 @@ import click
 from house_ingest.config import Config
 from house_ingest.house_ingest import HouseIngestor
 
-
 @click.group()
 @click.pass_context
 def main(ctx):
@@ -41,20 +40,11 @@ def calculate_area(ctx, input, output, parallelism):
 
 
 @main.command()
-@click.argument("input", type=click.File("rb"))
-@click.pass_context
-def index(ctx, input):
-    data = pickle.load(input)
-    ctx.obj["ingestor"].index(data)
-
-
-@main.command()
 @click.option("--parallelism", default=1)
 @click.pass_context
 def execute(ctx, parallelism):
     data = ctx.obj["ingestor"].scrape(parallelism)
-    data_with_area = ctx.obj["ingestor"].calculate_area(data, parallelism)
-    ctx.obj["ingestor"].index(data_with_area)
+    data_with_area = ctx.obj["ingestor"].execute(data, parallelism)
 
 
 @main.command()
