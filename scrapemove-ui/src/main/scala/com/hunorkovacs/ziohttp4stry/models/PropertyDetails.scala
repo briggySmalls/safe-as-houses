@@ -52,7 +52,8 @@ case class PropertyDetails(
   floorplans: List[Url],
   nearestStations: List[Station],
   brochures: List[String],
-  areaSqft: Option[Double]
+  areaSqft: Option[Double],
+  pricePerSqft: Option[Double]
 ) {
   def present: TypedTag[String] = {
     val components = Seq(
@@ -129,7 +130,7 @@ case class PropertyDetails(
     val attributes: Seq[(String, Option[Any])] = Seq(
       "Price"     -> price.displayPrice,
       "Size"      -> areaSqft,
-      "£/sqft"    -> (areaSqft, price.amount).tupled.map { case (area, price) => Math.round(price / area) },
+      "£/sqft"    -> pricePerSqft,
       "Bathrooms" -> bathrooms,
       "Bedrooms"  -> Some(bedrooms)
     )
