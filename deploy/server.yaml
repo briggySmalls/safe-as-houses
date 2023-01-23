@@ -42,3 +42,7 @@ spec:
         envFrom:
           - configMapRef:
               name: safeashouses-server-config
+        resources:
+          limits:
+            memory: "0.25Gi"
+            cpu: "0.2"

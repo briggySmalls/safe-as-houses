@@ -16,4 +16,8 @@ spec:
               envFrom:
                 - configMapRef:
                     name: safeashouses-ingest-config
+              resources:
+                limits:
+                  memory: "2Gi"
+                  cpu: "0.7"
           restartPolicy: OnFailure

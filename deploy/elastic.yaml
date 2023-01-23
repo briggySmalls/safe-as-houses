@@ -65,12 +65,9 @@ spec:
         - name: elastic-persistent-storage
           mountPath: /usr/share/elasticsearch/data
         resources:
-          requests:
-            memory: 3Gi
-            cpu: 1
           limits:
-            memory: 3Gi
-            cpu: 1
+            memory: "1.25Gi"
+            cpu: "0.75"
       volumes:
       - name: elastic-persistent-storage
         persistentVolumeClaim:
