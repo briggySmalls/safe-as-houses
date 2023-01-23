@@ -24,6 +24,7 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
     for {
       items <- renderItems(0)
     } yield html(
+      meta(name := "viewport", content := "width=device-width, initial-scale=1"),
       head(
         script(
           src := "https://cdn.tailwindcss.com"
