@@ -84,7 +84,8 @@
         }
       },
       "price_per_sqft": {
-        "type": "rank_feature"
+        "type": "rank_feature",
+        "positive_score_impact": false
       }
     }
   }
