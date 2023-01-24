@@ -70,12 +70,4 @@ object Main extends ZIOAppDefault {
     SearchServiceLive.layer,
     Settings.layer
   )
-
-  private def printError(err: Throwable): IO[IOException, Unit] = {
-    val sw = new StringWriter()
-    val pw = new PrintWriter(sw)
-    err.printStackTrace(pw)
-    val sStackTrace = sw.toString
-    Console.printLineError(sStackTrace)
-  }
 }
