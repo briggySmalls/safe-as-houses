@@ -2,6 +2,7 @@ package com.hunorkovacs.ziohttp4stry
 
 import cats.effect.{ ExitCode => CatsExitCode }
 import com.hunorkovacs.ziohttp4stry.config.Settings
+import com.hunorkovacs.ziohttp4stry.models.{ DocumentId, UserId }
 import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive, SearchService, SearchServiceLive }
 import org.apache.http.util.ExceptionUtils
 import org.http4s._
@@ -21,9 +22,13 @@ import java.time.Year
 import scala.concurrent.ExecutionContext
 import utils.Extensions._
 
-object FromQueryParamMatcher extends QueryParamDecoderMatcher[Int]("from")
-
 object Main extends ZIOAppDefault {
+
+  implicit val userQueryParamDecoder     = QueryParamDecoder[Int].map(UserId)
+  implicit val documentQueryParamDecoder = QueryParamDecoder[Int].map(DocumentId)
+  object FromQueryParamMatcher     extends QueryParamDecoderMatcher[Int]("from")
+  object UserQueryParamMatcher     extends QueryParamDecoderMatcher[UserId]("user")
+  object DocumentQueryParamMatcher extends QueryParamDecoderMatcher[DocumentId]("document")
 
   type AppEnvironment = SearchService with HtmlService with Settings
   type AppTask[A]     = RIO[AppEnvironment, A]
@@ -46,6 +51,12 @@ object Main extends ZIOAppDefault {
           HtmlService
             .getRenderItems(from)
             .map(_.map(_.render).mkString(""))
+            .logIssues()
+        )
+      case PUT -> Root / "api" / "v1" / "views" :? UserQueryParamMatcher(user) :? DocumentQueryParamMatcher(document) =>
+        Ok(
+          SearchService
+            .getUpdateViewer(document, user)
             .logIssues()
         )
     }

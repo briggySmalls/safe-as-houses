@@ -1,5 +1,7 @@
 package com.hunorkovacs.ziohttp4stry.utils
 
+import com.hunorkovacs.ziohttp4stry.models.AppExceptions.SearchException
+import com.sksamuel.elastic4s.{ ElasticError, Response }
 import zio.{ Console, IO, RIO, Task }
 
 import java.io.{ IOException, PrintWriter, StringWriter }
@@ -17,5 +19,16 @@ object Extensions {
       err.printStackTrace(pw)
       sw.toString
     }
+  }
+
+  implicit class ElasticErrorExtensions(val underlying: ElasticError) {
+    def toDomainException: Exception =
+      if (underlying.failedShards.isEmpty) underlying.asException
+      else new SearchException(underlying.failedShards.flatMap(_.reason).map(_.asException))
+  }
+
+  implicit class ResponseExtensions[U](val underlying: Response[U]) {
+    def toSubmergableError: Either[Exception, U] =
+      underlying.toEither.left.map(_.toDomainException)
   }
 }
