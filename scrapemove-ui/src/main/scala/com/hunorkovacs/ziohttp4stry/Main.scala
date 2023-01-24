@@ -4,31 +4,27 @@ import cats.effect.{ ExitCode => CatsExitCode }
 import com.hunorkovacs.ziohttp4stry.config.Settings
 import com.hunorkovacs.ziohttp4stry.models.{ DocumentId, UserId }
 import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive, SearchService, SearchServiceLive }
-import org.apache.http.util.ExceptionUtils
+import com.hunorkovacs.ziohttp4stry.utils.Extensions._
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.io._
 import org.http4s.implicits._
 import org.http4s.scalatags._
-
-import java.io.{ IOException, PrintWriter, StringWriter }
 import org.http4s.server.blaze.BlazeServerBuilder
-import zio.Cause.Die
 import zio._
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 
-import java.time.Year
 import scala.concurrent.ExecutionContext
-import utils.Extensions._
 
 object Main extends ZIOAppDefault {
 
   implicit val userQueryParamDecoder     = QueryParamDecoder[Int].map(UserId)
   implicit val documentQueryParamDecoder = QueryParamDecoder[Int].map(DocumentId)
-  object FromQueryParamMatcher     extends QueryParamDecoderMatcher[Int]("from")
-  object UserQueryParamMatcher     extends QueryParamDecoderMatcher[UserId]("user")
-  object DocumentQueryParamMatcher extends QueryParamDecoderMatcher[DocumentId]("document")
+  object FromQueryParamMatcher         extends QueryParamDecoderMatcher[Int]("from")
+  object OptionalUserQueryParamMatcher extends OptionalQueryParamDecoderMatcher[UserId]("user")
+  object UserQueryParamMatcher         extends QueryParamDecoderMatcher[UserId]("user")
+  object DocumentQueryParamMatcher     extends QueryParamDecoderMatcher[DocumentId]("document")
 
   type AppEnvironment = SearchService with HtmlService with Settings
   type AppTask[A]     = RIO[AppEnvironment, A]
@@ -40,20 +36,24 @@ object Main extends ZIOAppDefault {
 
   private val helloWorldService = HttpRoutes
     .of[AppTask] {
-      case GET -> Root =>
+      case GET -> Root :? OptionalUserQueryParamMatcher(user) =>
         Ok(
           HtmlService
-            .getRenderPage()
+            .getRenderPage(user)
             .logIssues()
         )
-      case GET -> Root / "api" / "v1" / "properties" :? FromQueryParamMatcher(from) =>
+      case GET -> Root / "api" / "v1" / "properties" :? OptionalUserQueryParamMatcher(user) :? FromQueryParamMatcher(
+            from
+          ) =>
         Ok(
           HtmlService
-            .getRenderItems(from)
+            .getRenderItems(from, user)
             .map(_.map(_.render).mkString(""))
             .logIssues()
         )
-      case PUT -> Root / "api" / "v1" / "views" :? UserQueryParamMatcher(user) :? DocumentQueryParamMatcher(document) =>
+      case PUT -> Root / "api" / "v1" / "views" :? UserQueryParamMatcher(user) :? DocumentQueryParamMatcher(
+            document
+          ) =>
         Ok(
           SearchService
             .getUpdateViewer(document, user)

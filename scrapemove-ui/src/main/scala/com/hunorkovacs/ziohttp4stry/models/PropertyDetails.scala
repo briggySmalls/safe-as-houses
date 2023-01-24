@@ -1,24 +1,21 @@
 package com.hunorkovacs.ziohttp4stry.models
 
-import cats.instances.float
 import com.hunorkovacs.ziohttp4stry.models.PropertyDetails.{ ListingUpdate, Price, Station }
 import org.http4s.blaze.http.Url
 import io.circe.generic.extras.ConfiguredJsonCodec
 import io.circe.generic.auto._
 import com.hunorkovacs.ziohttp4stry.utils.Configs.snakeCaseConfig
 import PropertyDetails._
-import com.sun.tools.javac.code.TypeTag
 import scalatags.Text.TypedTag
-import scalatags.Text.all.{ input, _ }
+import scalatags.Text.all._
 import cats.implicits._
 
 import java.time.{ Duration, Instant }
-import java.time.temporal.{ TemporalAmount, TemporalUnit }
-import java.util.{ Currency, Locale }
-import scala.concurrent.duration.{ DAYS, DurationInt }
+import java.util.{ Currency }
 
 @ConfiguredJsonCodec
 case class PropertyDetails(
+  id: Int,
   bedrooms: Int,
   bathrooms: Option[Int],
   number_of_images: Int,
@@ -55,7 +52,7 @@ case class PropertyDetails(
   areaSqft: Option[Double],
   pricePerSqft: Option[Double]
 ) {
-  def present: TypedTag[String] = {
+  def present(user: Option[UserId]): TypedTag[String] = {
     val components = Seq(
       images.headOption.map(url =>
         img(
@@ -94,7 +91,7 @@ case class PropertyDetails(
       )
     ).flatten
 
-    a(
+    val item = a(
       href := s"https://www.rightmove.co.uk$propertyUrl",
       target := "_blank",
       `class` :=
@@ -106,6 +103,14 @@ case class PropertyDetails(
           |dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:visited:bg-gray-600
           |""".stripMargin,
       components
+    )
+
+    user.fold(item)(u =>
+      item(
+        attr("hx-trigger") := "click",
+        attr("hx-put") := s"/api/v1/views?user=${u.id}&document=${id}",
+        attr("hx-swap") := "none"
+      )
     )
   }
 

@@ -1,28 +1,28 @@
 package com.hunorkovacs.ziohttp4stry.services
 
-import com.hunorkovacs.ziohttp4stry.models.PropertyDetails
+import com.hunorkovacs.ziohttp4stry.models.{ PropertyDetails, UserId }
 import scalatags.Text.TypedTag
 import scalatags.Text.all.{ input, _ }
 import zio.{ RIO, Task, UIO, ULayer, URIO, ZIO, ZLayer }
 
 trait HtmlService {
-  def renderPage(): Task[TypedTag[String]]
+  def renderPage(user: Option[UserId]): Task[TypedTag[String]]
 
-  def renderItems(from: Int): Task[Seq[TypedTag[String]]]
+  def renderItems(from: Int, user: Option[UserId] = None): Task[Seq[TypedTag[String]]]
 }
 
 object HtmlService {
-  def getRenderPage(): RIO[HtmlService, TypedTag[String]] =
-    ZIO.serviceWithZIO[HtmlService](_.renderPage())
+  def getRenderPage(user: Option[UserId]): RIO[HtmlService, TypedTag[String]] =
+    ZIO.serviceWithZIO[HtmlService](_.renderPage(user))
 
-  def getRenderItems(from: Int = 0): RIO[HtmlService, Seq[TypedTag[String]]] =
-    ZIO.serviceWithZIO[HtmlService](_.renderItems(from))
+  def getRenderItems(from: Int = 0, user: Option[UserId] = None): RIO[HtmlService, Seq[TypedTag[String]]] =
+    ZIO.serviceWithZIO[HtmlService](_.renderItems(from, user))
 }
 
 class HtmlServiceLive(searchService: SearchService) extends HtmlService {
-  override def renderPage(): Task[TypedTag[String]] =
+  override def renderPage(user: Option[UserId]): Task[TypedTag[String]] =
     for {
-      items <- renderItems(0)
+      items <- renderItems(0, user)
     } yield html(
       meta(name := "viewport", content := "width=device-width, initial-scale=1"),
       head(
@@ -44,12 +44,12 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
       )
     )
 
-  override def renderItems(from: Int): Task[Seq[TypedTag[String]]] =
+  override def renderItems(from: Int, user: Option[UserId]): Task[Seq[TypedTag[String]]] =
     for {
       _      <- zio.Console.printLine("Starting render!")
       result <- searchService.searchHouses(from)
       newFrom = from + result.size
-      components = result.map(_.present) match {
+      components = result.map(_.present(user)) match {
         case Nil => Nil
         case init :+ last =>
           init :+ last(
