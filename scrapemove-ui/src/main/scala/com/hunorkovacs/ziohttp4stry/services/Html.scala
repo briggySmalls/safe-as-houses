@@ -1,8 +1,9 @@
 package com.hunorkovacs.ziohttp4stry.services
 
-import com.hunorkovacs.ziohttp4stry.models.{ FilterMethod, PropertyDetails, SearchParams, UserId }
+import com.hunorkovacs.ziohttp4stry.models.{ FilterMethod, PropertyDetails, QueryParamUpdater, SearchParams, UserId }
 import scalatags.Text.TypedTag
 import scalatags.Text.all.{ input, _ }
+import shapeless.PolyDefns.->
 import zio.{ RIO, Task, UIO, ULayer, URIO, ZIO, ZLayer }
 
 trait HtmlService {
@@ -35,13 +36,40 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
           src := "https://unpkg.com/htmx.org@1.8.4",
           integrity := "sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV",
           crossorigin := "anonymous"
+        ),
+        script(
+          """
+            |function updateUrl(url, parameter, value) {
+            |  let u = new URL(url);
+            |  u.searchParams.set(parameter, value);
+            |  return u.toString();
+            |}
+            |""".stripMargin
         )
       ),
       body(
         `class` := "bg-slate-900",
         div(
           `class` := "flex flex-col gap-4 items-center",
-          items
+          div(
+            QueryParamUpdater(
+              "user",
+              Map(
+                UserId(1).id -> "Sam",
+                UserId(2).id -> "Pippy"
+              ),
+              searchParams.user.map(_.id)
+            ),
+            QueryParamUpdater(
+              "filter",
+              Map(
+                FilterMethod.Viewed.entryName    -> "viewed",
+                FilterMethod.NotViewed.entryName -> "not viewed"
+              ),
+              searchParams.filter.map(_.entryName)
+            )
+          ),
+          div(items)
         )
       )
     )
