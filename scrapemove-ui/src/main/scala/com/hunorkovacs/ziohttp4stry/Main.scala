@@ -2,7 +2,7 @@ package com.hunorkovacs.ziohttp4stry
 
 import cats.effect.{ ExitCode => CatsExitCode }
 import com.hunorkovacs.ziohttp4stry.config.Settings
-import com.hunorkovacs.ziohttp4stry.models.{ DocumentId, UserId }
+import com.hunorkovacs.ziohttp4stry.models.{ DocumentId, FilterMethod, SearchParams, UserId }
 import com.hunorkovacs.ziohttp4stry.services.{ HtmlService, HtmlServiceLive, SearchService, SearchServiceLive }
 import com.hunorkovacs.ziohttp4stry.utils.Extensions._
 import org.http4s._
@@ -21,10 +21,12 @@ object Main extends ZIOAppDefault {
 
   implicit val userQueryParamDecoder     = QueryParamDecoder[Int].map(UserId)
   implicit val documentQueryParamDecoder = QueryParamDecoder[Int].map(DocumentId)
-  object FromQueryParamMatcher         extends QueryParamDecoderMatcher[Int]("from")
-  object OptionalUserQueryParamMatcher extends OptionalQueryParamDecoderMatcher[UserId]("user")
-  object UserQueryParamMatcher         extends QueryParamDecoderMatcher[UserId]("user")
-  object DocumentQueryParamMatcher     extends QueryParamDecoderMatcher[DocumentId]("document")
+  implicit val filterQueryParamDecoder   = QueryParamDecoder[String].map(FilterMethod.withName)
+  object FromQueryParamMatcher           extends QueryParamDecoderMatcher[Int]("from")
+  object OptionalUserQueryParamMatcher   extends OptionalQueryParamDecoderMatcher[UserId]("user")
+  object UserQueryParamMatcher           extends QueryParamDecoderMatcher[UserId]("user")
+  object DocumentQueryParamMatcher       extends QueryParamDecoderMatcher[DocumentId]("document")
+  object OptionalFilterQueryParamMatcher extends OptionalQueryParamDecoderMatcher[FilterMethod]("filter")
 
   type AppEnvironment = SearchService with HtmlService with Settings
   type AppTask[A]     = RIO[AppEnvironment, A]
@@ -36,18 +38,18 @@ object Main extends ZIOAppDefault {
 
   private val helloWorldService = HttpRoutes
     .of[AppTask] {
-      case GET -> Root :? OptionalUserQueryParamMatcher(user) =>
+      case GET -> Root :? OptionalUserQueryParamMatcher(user) :? OptionalFilterQueryParamMatcher(filter) =>
         Ok(
           HtmlService
-            .getRenderPage(user)
+            .getRenderPage(SearchParams(from = 0, user = user, filter = filter))
             .logIssues()
         )
       case GET -> Root / "api" / "v1" / "properties" :? OptionalUserQueryParamMatcher(user) :? FromQueryParamMatcher(
             from
-          ) =>
+          ) :? OptionalFilterQueryParamMatcher(filter) =>
         Ok(
           HtmlService
-            .getRenderItems(from, user)
+            .getRenderItems(SearchParams(from, user, filter))
             .map(_.map(_.render).mkString(""))
             .logIssues()
         )

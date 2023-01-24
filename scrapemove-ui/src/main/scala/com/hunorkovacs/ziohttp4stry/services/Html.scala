@@ -1,28 +1,30 @@
 package com.hunorkovacs.ziohttp4stry.services
 
-import com.hunorkovacs.ziohttp4stry.models.{ PropertyDetails, UserId }
+import com.hunorkovacs.ziohttp4stry.models.{ FilterMethod, PropertyDetails, SearchParams, UserId }
 import scalatags.Text.TypedTag
 import scalatags.Text.all.{ input, _ }
 import zio.{ RIO, Task, UIO, ULayer, URIO, ZIO, ZLayer }
 
 trait HtmlService {
-  def renderPage(user: Option[UserId]): Task[TypedTag[String]]
+  def renderPage(searchParams: SearchParams): Task[TypedTag[String]]
 
-  def renderItems(from: Int, user: Option[UserId] = None): Task[Seq[TypedTag[String]]]
+  def renderItems(searchParams: SearchParams): Task[Seq[TypedTag[String]]]
 }
 
 object HtmlService {
-  def getRenderPage(user: Option[UserId]): RIO[HtmlService, TypedTag[String]] =
-    ZIO.serviceWithZIO[HtmlService](_.renderPage(user))
+  def getRenderPage(searchParams: SearchParams): RIO[HtmlService, TypedTag[String]] =
+    ZIO.serviceWithZIO[HtmlService](_.renderPage(searchParams))
 
-  def getRenderItems(from: Int = 0, user: Option[UserId] = None): RIO[HtmlService, Seq[TypedTag[String]]] =
-    ZIO.serviceWithZIO[HtmlService](_.renderItems(from, user))
+  def getRenderItems(
+    searchParams: SearchParams
+  ): RIO[HtmlService, Seq[TypedTag[String]]] =
+    ZIO.serviceWithZIO[HtmlService](_.renderItems(searchParams))
 }
 
 class HtmlServiceLive(searchService: SearchService) extends HtmlService {
-  override def renderPage(user: Option[UserId]): Task[TypedTag[String]] =
+  override def renderPage(searchParams: SearchParams): Task[TypedTag[String]] =
     for {
-      items <- renderItems(0, user)
+      items <- renderItems(searchParams)
     } yield html(
       meta(name := "viewport", content := "width=device-width, initial-scale=1"),
       head(
@@ -44,21 +46,25 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
       )
     )
 
-  override def renderItems(from: Int, user: Option[UserId]): Task[Seq[TypedTag[String]]] =
+  override def renderItems(
+    searchParams: SearchParams
+  ): Task[Seq[TypedTag[String]]] =
     for {
-      _      <- zio.Console.printLine("Starting render!")
-      result <- searchService.searchHouses(from)
-      newFrom = from + result.size
-      components = result.map(_.present(user)) match {
+      _       <- zio.Console.printLine("Starting render!")
+      results <- searchService.searchHouses(searchParams)
+      newParams  = searchParams.incrementFrom(results.size)
+      components = results.map(_.present(newParams))
+      // Wrap the components with a div with an infinite scroll action
+      wrappedComponents = components.map(c => div(`class` := "scroll-wrapper", c)) match {
         case Nil => Nil
         case init :+ last =>
           init :+ last(
-            attr("hx-get") := s"/api/v1/properties?from=$newFrom",
+            attr("hx-get") := newParams.buildUrl("/api/v1/properties"),
             attr("hx-trigger") := "revealed",
             attr("hx-swap") := "afterend"
           )
       }
-    } yield components
+    } yield wrappedComponents
 }
 
 object HtmlServiceLive {

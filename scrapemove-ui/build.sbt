@@ -23,7 +23,8 @@ lazy val root = (project in file("."))
       "com.sksamuel.elastic4s" %% "elastic4s-effect-zio"    % elastic4sVersion,
       "com.sksamuel.elastic4s" %% "elastic4s-json-circe"    % elastic4sVersion,
       "org.typelevel"          %% "cats-core"               % "2.9.0",
-      "com.typesafe"           % "config"                   % "1.4.2"
+      "com.typesafe"           % "config"                   % "1.4.2",
+      "com.beachape"           %% "enumeratum"              % "1.7.2"
     ) ++ Seq(
       "io.circe" %% "circe-core",
       "io.circe" %% "circe-generic", // Automatic schema derivation

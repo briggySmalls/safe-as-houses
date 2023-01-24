@@ -6,12 +6,13 @@ import io.circe.generic.extras.ConfiguredJsonCodec
 import io.circe.generic.auto._
 import com.hunorkovacs.ziohttp4stry.utils.Configs.snakeCaseConfig
 import PropertyDetails._
+import cats.data.Chain.Wrap
 import scalatags.Text.TypedTag
 import scalatags.Text.all._
 import cats.implicits._
 
 import java.time.{ Duration, Instant }
-import java.util.{ Currency }
+import java.util.Currency
 
 @ConfiguredJsonCodec
 case class PropertyDetails(
@@ -52,7 +53,7 @@ case class PropertyDetails(
   areaSqft: Option[Double],
   pricePerSqft: Option[Double]
 ) {
-  def present(user: Option[UserId]): TypedTag[String] = {
+  def present(searchParams: SearchParams): TypedTag[String] = {
     val components = Seq(
       images.headOption.map(url =>
         img(
@@ -91,6 +92,7 @@ case class PropertyDetails(
       )
     ).flatten
 
+    // Wrap the components in an anchor that links to rightmove
     val item = a(
       href := s"https://www.rightmove.co.uk$propertyUrl",
       target := "_blank",
@@ -105,13 +107,17 @@ case class PropertyDetails(
       components
     )
 
-    user.fold(item)(u =>
-      item(
-        attr("hx-trigger") := "click",
-        attr("hx-put") := s"/api/v1/views?user=${u.id}&document=${id}",
-        attr("hx-swap") := "none"
-      )
-    )
+    // Wrap the anchor in an element with a user viewed click action (if user supplied)
+    searchParams.user.foldLeft(
+      div(`class` := "viewed-wrapper my-2", item)
+    ) {
+      case (el, u) =>
+        el(
+          attr("hx-trigger") := "click",
+          attr("hx-put") := s"/api/v1/views?user=${u.id}&document=${id}",
+          attr("hx-swap") := "none"
+        )
+    }
   }
 
   def titleMarkup: Seq[TypedTag[String]] =
@@ -151,6 +157,7 @@ case class PropertyDetails(
 }
 
 object PropertyDetails {
+
   case class Station(
     name: String,
     types: List[String],
