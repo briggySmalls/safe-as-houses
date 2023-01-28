@@ -85,7 +85,7 @@ case class PropertyDetails(
             shareDescription
           ),
           div(
-            `class` := "flex justify-between",
+            `class` := "flex flex-col md:flex-row justify-between",
             attributes.toSeq
           )
         )
