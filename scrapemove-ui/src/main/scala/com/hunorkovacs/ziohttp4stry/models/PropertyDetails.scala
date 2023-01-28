@@ -140,8 +140,8 @@ case class PropertyDetails(
 
     val attributes: Seq[(String, Option[Any])] = Seq(
       "Price"     -> price.displayPrice,
-      "Size"      -> areaSqft,
-      "£/sqft"    -> pricePerSqft,
+      "Size"      -> areaSqft.map(Math.round),
+      "£/sqft"    -> pricePerSqft.map(Math.round),
       "Bathrooms" -> bathrooms,
       "Bedrooms"  -> Some(bedrooms)
     )
