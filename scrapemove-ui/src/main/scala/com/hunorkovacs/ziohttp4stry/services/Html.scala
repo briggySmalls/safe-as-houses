@@ -56,26 +56,7 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
         `class` := "bg-slate-900",
         div(
           `class` := "flex flex-col gap-4 items-center",
-          div(
-            QueryParamUpdater(
-              "user",
-              Map(
-                UserId(1).id -> "Sam",
-                UserId(2).id -> "Pippy"
-              ),
-              "None",
-              searchParams.user.map(_.id)
-            ),
-            QueryParamUpdater(
-              "filter",
-              Map(
-                FilterMethod.Viewed.entryName    -> "viewed",
-                FilterMethod.NotViewed.entryName -> "not viewed"
-              ),
-              "all",
-              searchParams.filter.map(_.entryName)
-            )
-          ),
+          div(id := "navBar", filterForm(searchParams)),
           div(items)
         )
       )
@@ -100,6 +81,32 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
           )
       }
     } yield wrappedComponents
+
+  private def filterForm(searchParams: SearchParams): Seq[TypedTag[String]] =
+    searchParams.user.foldLeft(
+      Seq(
+        QueryParamUpdater(
+          "user",
+          Map(
+            UserId(1).id -> "Sam",
+            UserId(2).id -> "Pippy"
+          ),
+          "None",
+          searchParams.user.map(_.id)
+        )
+      )
+    ) {
+      case (form, _) =>
+        form :+ QueryParamUpdater(
+          "filter",
+          Map(
+            FilterMethod.Viewed.entryName    -> "viewed",
+            FilterMethod.NotViewed.entryName -> "not viewed"
+          ),
+          "all",
+          searchParams.filter.map(_.entryName)
+        )
+    }
 }
 
 object HtmlServiceLive {
