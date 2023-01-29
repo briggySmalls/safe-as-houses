@@ -41,7 +41,12 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
           """
             |function updateUrl(url, parameter, value) {
             |  let u = new URL(url);
-            |  u.searchParams.set(parameter, value);
+            |  if (value === 'null') {
+            |     u.searchParams.delete(parameter);
+            |  }
+            |  else {
+            |     u.searchParams.set(parameter, value);
+            |  }
             |  return u.toString();
             |}
             |""".stripMargin
@@ -58,6 +63,7 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
                 UserId(1).id -> "Sam",
                 UserId(2).id -> "Pippy"
               ),
+              "None",
               searchParams.user.map(_.id)
             ),
             QueryParamUpdater(
@@ -66,6 +72,7 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
                 FilterMethod.Viewed.entryName    -> "viewed",
                 FilterMethod.NotViewed.entryName -> "not viewed"
               ),
+              "all",
               searchParams.filter.map(_.entryName)
             )
           ),
