@@ -70,7 +70,10 @@ class SearchServiceLive(settings: Settings) extends SearchService {
       case (Some(u), Some(FilterMethod.Viewed)) =>
         query.filter(TermQuery(field="viewedBy", value=u.id))
       case (Some(u), Some(FilterMethod.NotViewed)) =>
-        query.filter(not(TermQuery(field="viewedBy", value=u.id)))
+        query.filter(should(
+          not(existsQuery("viewedBy")),
+          not(TermQuery(field="viewedBy", value=u.id))
+        ))
       case (_, _) => query
     }
 
