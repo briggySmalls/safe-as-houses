@@ -27,31 +27,7 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
     for {
       items <- renderItems(searchParams)
     } yield html(
-      meta(name := "viewport", content := "width=device-width, initial-scale=1"),
-      head(
-        script(
-          src := "https://cdn.tailwindcss.com"
-        ),
-        script(
-          src := "https://unpkg.com/htmx.org@1.8.4",
-          integrity := "sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV",
-          crossorigin := "anonymous"
-        ),
-        script(
-          """
-            |function updateUrl(url, parameter, value) {
-            |  let u = new URL(url);
-            |  if (value === 'null') {
-            |     u.searchParams.delete(parameter);
-            |  }
-            |  else {
-            |     u.searchParams.set(parameter, value);
-            |  }
-            |  return u.toString();
-            |}
-            |""".stripMargin
-        )
-      ),
+      headElement,
       body(
         `class` := "bg-slate-900",
         div(
@@ -107,6 +83,32 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
           searchParams.filter.map(_.entryName)
         )
     }
+
+  private val headElement: TypedTag[String] = head(
+    meta(name := "viewport", content := "width=device-width, initial-scale=1"),
+    script(
+      src := "https://cdn.tailwindcss.com"
+    ),
+    script(
+      src := "https://unpkg.com/htmx.org@1.8.4",
+      integrity := "sha384-wg5Y/JwF7VxGk4zLsJEcAojRtlVp1FKKdGy1qN+OMtdq72WRvX/EdRdqg/LOhYeV",
+      crossorigin := "anonymous"
+    ),
+    script(
+      """
+        |function updateUrl(url, parameter, value) {
+        |  let u = new URL(url);
+        |  if (value === 'null') {
+        |     u.searchParams.delete(parameter);
+        |  }
+        |  else {
+        |     u.searchParams.set(parameter, value);
+        |  }
+        |  return u.toString();
+        |}
+        |""".stripMargin
+    )
+  )
 }
 
 object HtmlServiceLive {
