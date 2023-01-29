@@ -101,7 +101,7 @@ case class PropertyDetails(
           |flex flex-col items-center
           |border rounded-lg shadow
           |md:flex-row md:max-w-6xl
-          |bg-white border-gray-200 hover:bg-gray-100 visited:bg-gray-50
+          |bg-gray-50 border-gray-200 hover:bg-gray-300 visited:bg-gray-100
           |dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:visited:bg-gray-600
           |""".stripMargin,
       components
@@ -109,7 +109,7 @@ case class PropertyDetails(
 
     // Wrap the anchor in an element with a user viewed click action (if user supplied)
     searchParams.user.foldLeft(
-      div(`class` := "viewed-wrapper my-2", item)
+      div(`class` := "viewed-wrapper", item)
     ) {
       case (el, u) =>
         el(

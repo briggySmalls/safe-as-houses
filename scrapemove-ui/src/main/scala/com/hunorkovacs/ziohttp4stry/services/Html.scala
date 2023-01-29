@@ -2,6 +2,7 @@ package com.hunorkovacs.ziohttp4stry.services
 
 import com.hunorkovacs.ziohttp4stry.models.{ FilterMethod, PropertyDetails, QueryParamUpdater, SearchParams, UserId }
 import scalatags.Text.TypedTag
+import scalatags.Text.tags2.{ main, nav }
 import scalatags.Text.all.{ input, _ }
 import shapeless.PolyDefns.->
 import zio.{ RIO, Task, UIO, ULayer, URIO, ZIO, ZLayer }
@@ -29,11 +30,10 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
     } yield html(
       headElement,
       body(
-        `class` := "bg-slate-900",
+        `class` := "dark:bg-slate-900",
         div(
-          `class` := "flex flex-col gap-4 items-center",
-          div(id := "navBar", filterForm(searchParams)),
-          div(items)
+          header(`class` := "sticky top-0 z-50", navBar(searchParams)),
+          main(`class` := "relative flex flex-col gap-4 items-center", items)
         )
       )
     )
@@ -57,6 +57,19 @@ class HtmlServiceLive(searchService: SearchService) extends HtmlService {
           )
       }
     } yield wrappedComponents
+
+  private def navBar(searchParams: SearchParams): TypedTag[String] =
+    nav(
+      `class` :=
+        """
+          |w-full py-2
+          |border-x border-b rounded-b-md
+          |bg-gray-100 border-gray-200
+          |dark:bg-gray-900 dark:border-gray-700
+          |flex flex-row justify-center gap-2
+          |""".stripMargin,
+      filterForm(searchParams)
+    )
 
   private def filterForm(searchParams: SearchParams): Seq[TypedTag[String]] =
     searchParams.user.foldLeft(
