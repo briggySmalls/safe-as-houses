@@ -1,24 +1,22 @@
 package com.hunorkovacs.ziohttp4stry.models
 
-import cats.instances.float
 import com.hunorkovacs.ziohttp4stry.models.PropertyDetails.{ ListingUpdate, Price, Station }
 import org.http4s.blaze.http.Url
 import io.circe.generic.extras.ConfiguredJsonCodec
 import io.circe.generic.auto._
 import com.hunorkovacs.ziohttp4stry.utils.Configs.snakeCaseConfig
 import PropertyDetails._
-import com.sun.tools.javac.code.TypeTag
+import cats.data.Chain.Wrap
 import scalatags.Text.TypedTag
-import scalatags.Text.all.{ input, _ }
+import scalatags.Text.all._
 import cats.implicits._
 
 import java.time.{ Duration, Instant }
-import java.time.temporal.{ TemporalAmount, TemporalUnit }
-import java.util.{ Currency, Locale }
-import scala.concurrent.duration.{ DAYS, DurationInt }
+import java.util.Currency
 
 @ConfiguredJsonCodec
 case class PropertyDetails(
+  id: Int,
   bedrooms: Int,
   bathrooms: Option[Int],
   number_of_images: Int,
@@ -55,7 +53,7 @@ case class PropertyDetails(
   areaSqft: Option[Double],
   pricePerSqft: Option[Double]
 ) {
-  def present: TypedTag[String] = {
+  def present(searchParams: SearchParams): TypedTag[String] = {
     val components = Seq(
       images.headOption.map(url =>
         img(
@@ -87,14 +85,15 @@ case class PropertyDetails(
             shareDescription
           ),
           div(
-            `class` := "flex justify-between",
+            `class` := "flex flex-col md:flex-row justify-between",
             attributes.toSeq
           )
         )
       )
     ).flatten
 
-    a(
+    // Wrap the components in an anchor that links to rightmove
+    val item = a(
       href := s"https://www.rightmove.co.uk$propertyUrl",
       target := "_blank",
       `class` :=
@@ -102,11 +101,23 @@ case class PropertyDetails(
           |flex flex-col items-center
           |border rounded-lg shadow
           |md:flex-row md:max-w-6xl
-          |bg-white border-gray-200 hover:bg-gray-100 visited:bg-gray-50
+          |bg-gray-50 border-gray-200 hover:bg-gray-300 visited:bg-gray-100
           |dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:visited:bg-gray-600
           |""".stripMargin,
       components
     )
+
+    // Wrap the anchor in an element with a user viewed click action (if user supplied)
+    searchParams.user.foldLeft(
+      div(`class` := "viewed-wrapper", item)
+    ) {
+      case (el, u) =>
+        el(
+          attr("hx-trigger") := "click",
+          attr("hx-put") := s"/api/v1/views?user=${u.id}&document=${id}",
+          attr("hx-swap") := "none"
+        )
+    }
   }
 
   def titleMarkup: Seq[TypedTag[String]] =
@@ -129,8 +140,8 @@ case class PropertyDetails(
 
     val attributes: Seq[(String, Option[Any])] = Seq(
       "Price"     -> price.displayPrice,
-      "Size"      -> areaSqft,
-      "£/sqft"    -> pricePerSqft,
+      "Size"      -> areaSqft.map(Math.round),
+      "£/sqft"    -> pricePerSqft.map(Math.round),
       "Bathrooms" -> bathrooms,
       "Bedrooms"  -> Some(bedrooms)
     )
@@ -146,6 +157,7 @@ case class PropertyDetails(
 }
 
 object PropertyDetails {
+
   case class Station(
     name: String,
     types: List[String],
