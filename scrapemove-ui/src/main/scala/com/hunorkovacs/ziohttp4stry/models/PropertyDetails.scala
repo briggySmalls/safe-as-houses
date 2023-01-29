@@ -69,7 +69,7 @@ case class PropertyDetails(
         div(
           `class` :=
             """
-              |flex flex-col justify-between p-4 leading-normal
+              |flex flex-col justify-between p-4 leading-normal gap-4
               |w-full
               |text-gray-700 dark:text-gray-400
               |""".stripMargin,
@@ -81,9 +81,10 @@ case class PropertyDetails(
             titleMarkup
           ),
           p(
-            `class` := "mb-3 font-normal",
+            `class` := "font-normal",
             shareDescription
           ),
+          listedMarkup,
           div(
             `class` := "flex flex-col md:flex-row justify-between",
             attributes.toSeq
@@ -133,6 +134,16 @@ case class PropertyDetails(
       else
         None
     ).flatten
+
+  def listedMarkup: TypedTag[String] =
+    p(
+      span(`class` := "mr-1", listingUpdate.reason match {
+        case "new"           => "Listed"
+        case "price_reduced" => "Reduced"
+      }),
+      span(`class` := "mr-1", Duration.between(listingUpdate.date, Instant.now()).toDays),
+      span(`class` := "mr-1", "days ago")
+    )
 
   def isListedInPast(duration: Duration): Boolean = firstVisibleDate.isAfter(Instant.now().minus(duration))
 
