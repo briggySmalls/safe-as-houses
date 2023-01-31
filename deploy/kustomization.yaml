@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- config.yaml
+- ingest.yaml
+- server.yaml
+- elastic.yaml
+
+namespace: default
+
+commonLabels:
+  app: safeashouses
+
+images:
+- name: briggysmalls/safeashouses-ingest
+  newTag: latest
+- name: briggysmalls/safeashouses-ui
+  newTag: latest

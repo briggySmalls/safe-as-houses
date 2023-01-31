@@ -16,3 +16,28 @@ jobs:
       directory: house_ingest
       image-name: safeashouses-ingest
     secrets: inherit
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [build-server, build-ingest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - uses: imranismail/setup-kustomize@v2
+      - name: Set image tag
+        run: |
+          cd deploy
+          kustomize edit set image \
+            briggysmalls/safeashouses-ingest:${{ steps.vars.outputs.sha_short }} \
+            briggysmalls/safeashouses-ui:${{ steps.vars.outputs.sha_short }}
+          cat kustomization.yaml
+      - uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        with:
+          args: apply -k ./deploy
