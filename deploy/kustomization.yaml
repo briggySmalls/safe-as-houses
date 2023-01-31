@@ -13,9 +13,7 @@ commonLabels:
   app: safeashouses
 
 images:
-  - name: safeashouses-ingest
-    newName: briggysmalls/safeashouses-ingest
-    newTag: latest
-  - name: safeashouses-server
-    newName: briggysmalls/safeashouses-ui
-    newTag: latest
+- name: briggysmalls/safeashouses-ingest
+  newTag: latest
+- name: briggysmalls/safeashouses-ui
+  newTag: latest

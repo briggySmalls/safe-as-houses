@@ -26,8 +26,8 @@ jobs:
       - run: |
           cd deploy
           kustomize edit set image \
-            safeashouses-ingest:${GITHUB_SHA} \
-            safeashouses-server:${GITHUB_SHA}
+            briggysmalls/safeashouses-ingest:${GITHUB_SHA} \
+            briggysmalls/safeashouses-ui:${GITHUB_SHA}
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
