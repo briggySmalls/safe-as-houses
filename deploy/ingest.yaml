@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
             - name: safeashouses-ingest
-              image: briggysmalls/safeashouses-ingest:4a6222a
+              image: safeashouses-ingest
               envFrom:
                 - configMapRef:
                     name: safeashouses-ingest-config
