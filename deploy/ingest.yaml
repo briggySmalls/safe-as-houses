@@ -2,17 +2,15 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: safeashouses-ingest
-  labels:
-    app: safeashouses
 spec:
-  schedule: "0 8 * * *"
+  schedule: "0 0,12 * * *"
   jobTemplate:
     spec:
       template:
         spec:
           containers:
             - name: safeashouses-ingest
-              image: briggysmalls/safeashouses-ingest:50c29144
+              image: briggysmalls/safeashouses-ingest:4a6222a
               envFrom:
                 - configMapRef:
                     name: safeashouses-ingest-config

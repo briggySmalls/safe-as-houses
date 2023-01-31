@@ -1,0 +1,10 @@
+resources:
+- config.yaml
+- ingest.yaml
+- server.yaml
+- elastic.yaml
+
+namespace: default
+
+commonLabels:
+  app: safeashouses

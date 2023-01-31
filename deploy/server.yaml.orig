@@ -2,11 +2,17 @@ apiVersion: v1
 kind: Service
 metadata:
   name: safeashouses-server
+  labels:
+    app: safeashouses
 spec:
   type: LoadBalancer
   ports:
     - port: 80
       targetPort: 80
+<<<<<<< HEAD
+      nodePort: 30007
+=======
+>>>>>>> 0c03feb (Use a loadbalancer)
       name: http
   selector:
     app: safeashouses
@@ -16,6 +22,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: safeashouses-server
+  labels:
+    app: safeashouses
 spec:
   selector:
     matchLabels:
@@ -30,7 +38,7 @@ spec:
         tier: server
     spec:
       containers:
-      - image: docker.io/briggysmalls/safeashouses-ui:4a6222a
+      - image: docker.io/briggysmalls/safeashouses-ui
         name: safeashouses-server
         ports:
           - containerPort: 80
@@ -38,7 +46,3 @@ spec:
         envFrom:
           - configMapRef:
               name: safeashouses-server-config
-        resources:
-          limits:
-            memory: "0.25Gi"
-            cpu: "0.2"
