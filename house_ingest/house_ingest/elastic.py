@@ -30,7 +30,14 @@ class ElasticClient:
 
     def index(self, index: str, data: Dict[str, Any]) -> None:
         id, doc = self._convert(data)
-        return self._es.index(index=index, id=id, document=doc)
+        return self._es.update(
+            index=index,
+            id=id,
+            body={
+                "doc": doc,
+                "doc_as_upsert": True
+            }
+        )
 
     @classmethod
     def _convert(cls, data: Dict[str, Any]) -> Dict[str, Any]:
