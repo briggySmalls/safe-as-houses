@@ -39,4 +39,6 @@ jobs:
           context: "{{defaultContext}}:${{ inputs.directory }}"
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: briggysmalls/${{ inputs.image-name }}:${{ env.GITHUB_SHORT_SHA }}
+          tags: |
+            briggysmalls/${{ inputs.image-name }}:${{ env.GITHUB_SHORT_SHA }}
+            briggysmalls/${{ inputs.image-name }}:latest
