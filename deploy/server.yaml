@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: safeashouses-server
 spec:
-  type: LoadBalancer
   ports:
     - port: 80
       targetPort: 80

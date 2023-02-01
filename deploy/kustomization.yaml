@@ -6,6 +6,8 @@ resources:
 - ingest.yaml
 - server.yaml
 - elastic.yaml
+- ingress.yaml
+- letsencrypt.yaml
 
 namespace: default
 
