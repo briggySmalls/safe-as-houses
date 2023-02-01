@@ -6,6 +6,7 @@ resources:
 - ingest.yaml
 - server.yaml
 - elastic.yaml
+- ingress.yaml
 
 namespace: default
 
