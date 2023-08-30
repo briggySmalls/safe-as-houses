@@ -54,6 +54,7 @@ class HouseIngestor:
     def __init__(self, config: Config) -> None:
         self._config = config
         self._es = ElasticClient(Elasticsearch(config.ES_URL))
+        self._logger = logging.getLogger(__name__)
 
     def scrape(self, parallelism: int=1) -> List[CombinedDetails]:
         return scrapemove.request(
@@ -76,9 +77,9 @@ class HouseIngestor:
             return p.starmap(iterate, args)
 
     def create_index(self, index_name=None) -> None:
-        self._es.create_index(
-            self._config.INDEX_NAME if index_name is None else index_name
-        )
+        name = self._config.INDEX_NAME if index_name is None else index_name
+        self._es.create_index(name)
+        self._logger.info(f"Created index {name} at URL {self._config.ES_URL}")
 
     def reindex(self, source: str, destination: str) -> None:
         self._es.reindex(source, destination)

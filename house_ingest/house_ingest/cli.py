@@ -2,11 +2,13 @@
 
 import pickle
 import sys
+import logging
 
 import click
 
 from house_ingest.config import Config
 from house_ingest.house_ingest import HouseIngestor
+
 
 @click.group()
 @click.pass_context
@@ -16,6 +18,7 @@ def main(ctx):
     config = Config.from_env()
     ctx.obj["config"] = config
     ctx.obj["ingestor"] = HouseIngestor(config)
+    logging.basicConfig(level=logging.INFO)
     return 0
 
 
