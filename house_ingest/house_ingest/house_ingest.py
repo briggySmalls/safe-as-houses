@@ -66,10 +66,14 @@ class HouseIngestor:
         with ThreadPool(parallelism) as p:
             return p.starmap(iterate, zip(data, repeat(progress)))
 
-    def execute(self, data: List[CombinedDetails], parallelism: int=1) -> None:
+    def execute(
+        self, data: List[CombinedDetails], index_name: bool = None, parallelism: int = 1
+    ) -> None:
         progress = tqdm(unit="properties", total=len(data), disable=None)
+        name = self._config.INDEX_NAME if index_name is None else index_name
+        args = zip(repeat(name), data, repeat(self._es), repeat(progress))
         with ThreadPool(parallelism) as p:
-            return p.starmap(iterate, zip(repeat(self._config.INDEX_NAME), data, repeat(self._es), repeat(progress)))
+            return p.starmap(iterate, args)
 
     def create_index(self, index_name=None) -> None:
         self._es.create_index(

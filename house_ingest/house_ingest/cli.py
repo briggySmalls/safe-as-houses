@@ -40,11 +40,12 @@ def calculate_area(ctx, input, output, parallelism):
 
 
 @main.command()
+@click.option("--index-name", help="Override index to targe")
 @click.option("--parallelism", default=1)
 @click.pass_context
-def execute(ctx, parallelism):
+def execute(ctx, index_name, parallelism):
     data = ctx.obj["ingestor"].scrape(parallelism)
-    data_with_area = ctx.obj["ingestor"].execute(data, parallelism)
+    data_with_area = ctx.obj["ingestor"].execute(data, index_name, parallelism)
 
 
 @main.command()
