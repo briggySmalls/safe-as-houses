@@ -66,5 +66,13 @@ def reindex(ctx, source, destination):
     ctx.obj["ingestor"].reindex(source, destination)
 
 
+@main.command()
+@click.pass_context
+@click.argument("destination")
+@click.argument("alias")
+def move_alias(ctx, destination, alias):
+    ctx.obj["ingestor"].move_alias(destination, alias)
+
+
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover

@@ -90,3 +90,6 @@ class HouseIngestor:
 
     def reindex(self, source: str, destination: str) -> None:
         self._es.reindex(source, destination)
+    
+    def move_alias(self, destination: str, alias: str) -> None:
+        self._es.move_alias(destination, alias)
