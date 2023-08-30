@@ -17,6 +17,9 @@ from house_ingest.elastic import ElasticClient
 from house_ingest.models import IndexData
 
 
+logger = logging.getLogger(__name__)
+
+
 def head(l: List[Any]) -> Optional[Any]:
     return next(iter(l), None)
 
@@ -34,11 +37,16 @@ def _calculate_area(data: CombinedDetails) -> IndexData:
     floorplan_url = head(data.additional_details.floorplans)
     if floorplan_url is None:
         return IndexData(scraped=data, area_sqft=None)
+
     response = requests.get(floorplan_url)
     image = BytesIO(response.content)
     print(f"Parsing area for {data.property.id} from URL {floorplan_url}")
-    area = PlanParser.parse(image).area
-    return IndexData(scraped=data, area_sqft=area)
+    try:
+        area = PlanParser.parse(image).area
+        return IndexData(scraped=data, area_sqft=area)
+    except Exception as exc:
+        logger.warn(f"Failed parsing property {data.property.id} with exception", exc_info=True)
+        return IndexData(scraped=data, area_sqft=None)
 
 
 def _index(index: str, data: IndexData, client: ElasticClient) -> None:
