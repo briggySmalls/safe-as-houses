@@ -1,15 +1,16 @@
 """Main module."""
-from typing import Any, Dict, List, Optional
-
-from elasticsearch import Elasticsearch
+from io import BytesIO
 from itertools import repeat
+from multiprocessing.dummy import Pool as ThreadPool
+from typing import Any, Dict, List, Optional
+import logging
+
+import requests
+from elasticsearch import Elasticsearch
+from planparser.planparser import PlanParser
 from scrapemove import scrapemove
 from scrapemove.models import CombinedDetails
-import requests
-from planparser.planparser import PlanParser
 from tqdm import tqdm
-from multiprocessing.dummy import Pool as ThreadPool
-from io import BytesIO
 
 from house_ingest.config import Config
 from house_ingest.elastic import ElasticClient
@@ -22,7 +23,9 @@ def head(l: List[Any]) -> Optional[Any]:
 
 def _calculate_area(data: CombinedDetails) -> IndexData:
     # First check if we already have the area
-    supplied_area = next((s for s in data.additional_details.sizings if s.unit == "sqft"), None)
+    supplied_area = next(
+        (s for s in data.additional_details.sizings if s.unit == "sqft"), None
+    )
     if supplied_area:
         print(f"Skipping, as area supplied for {data.property.id}")
         return IndexData(scraped=data, area_sqft=supplied_area.maximum_size)
@@ -43,7 +46,9 @@ def _index(index: str, data: IndexData, client: ElasticClient) -> None:
     client.index(index=index, data=record)
 
 
-def iterate(index:str, data: CombinedDetails, client: ElasticClient, progress) -> IndexData:
+def iterate(
+    index: str, data: CombinedDetails, client: ElasticClient, progress
+) -> IndexData:
     result = _calculate_area(data)
     _index(index, result, client)
     progress.update(1)
@@ -56,12 +61,14 @@ class HouseIngestor:
         self._es = ElasticClient(Elasticsearch(config.ES_URL))
         self._logger = logging.getLogger(__name__)
 
-    def scrape(self, parallelism: int=1) -> List[CombinedDetails]:
+    def scrape(self, parallelism: int = 1) -> List[CombinedDetails]:
         return scrapemove.request(
             self._config.QUERY_URL, detailed=True, parallelism=parallelism
         )
 
-    def calculate_area(self, data: List[CombinedDetails], parallelism: int=1) -> List[IndexData]:
+    def calculate_area(
+        self, data: List[CombinedDetails], parallelism: int = 1
+    ) -> List[IndexData]:
         print(f"Calculating area for {len(data)} properties")
         progress = tqdm(unit="properties", total=len(data))
         with ThreadPool(parallelism) as p:
@@ -83,4 +90,3 @@ class HouseIngestor:
 
     def reindex(self, source: str, destination: str) -> None:
         self._es.reindex(source, destination)
-
