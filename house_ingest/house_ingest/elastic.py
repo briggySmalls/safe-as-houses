@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, NotFoundError
 from elasticsearch.helpers import streaming_bulk
 from tqdm import tqdm
 
@@ -31,13 +31,21 @@ class ElasticClient:
     def index(self, index: str, data: Dict[str, Any]) -> None:
         id, doc = self._convert(data)
         return self._es.update(
-            index=index,
-            id=id,
-            body={
-                "doc": doc,
-                "doc_as_upsert": True
-            }
+            index=index, id=id, body={"doc": doc, "doc_as_upsert": True}
         )
+
+    def move_alias(self, destination: str, alias: str) -> None:
+        # Get the current alias
+        try:
+            existing_alias = next(iter(self._es.indices.get_alias(name=alias).keys()), None)
+        except NotFoundError:
+            existing_alias = None
+        # Build the request
+        actions = [{"add": {"index": destination, "alias": alias}}]
+        if existing_alias is not None:
+            actions += {"remove": {"index": existing_alias, "alias": alias}},
+        # Move the alias
+        self._es.indices.update_aliases(actions=actions)
 
     @classmethod
     def _convert(cls, data: Dict[str, Any]) -> Dict[str, Any]:

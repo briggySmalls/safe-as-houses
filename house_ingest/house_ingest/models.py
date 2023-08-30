@@ -3,7 +3,6 @@ from typing import Any, Optional
 from pydantic import BaseModel
 from scrapemove.models import CombinedDetails
 
-
 _DEFAULT_PRICE_PER_SQFT = 10000.0
 
 

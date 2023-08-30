@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Optional
 
 from dotenv import dotenv_values
 from pydantic import AnyHttpUrl, BaseModel, HttpUrl
@@ -8,7 +9,7 @@ from pydantic import AnyHttpUrl, BaseModel, HttpUrl
 class Config(BaseModel):
     QUERY_URL: HttpUrl  # The URL to query for data
     ES_URL: AnyHttpUrl
-    INDEX_NAME: str
+    INDEX_NAME: Optional[str]
 
     @classmethod
     def from_env(cls) -> "Config":
