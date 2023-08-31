@@ -4,7 +4,7 @@ metadata:
   name: safeashouses-ingest-config
 data:
   ES_URL: http://safeashouses-elastic:9200
-  QUERY_URL: https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=USERDEFINEDAREA%5E%7B%22id%22%3A%228084083%22%7D&minBedrooms=2&maxPrice=1750000&minPrice=800000&propertyTypes=&mustHave=&dontShow=&furnishTypes=&keywords=
+  QUERY_URL: https://www.rightmove.co.uk/property-for-sale/map.html?locationIdentifier=USERDEFINEDAREA%5E%7B%22id%22%3A%228084083%22%7D&minBedrooms=3&maxPrice=1750000&minPrice=800000&numberOfPropertiesPerPage=499&propertyTypes=detached%2Csemi-detached%2Cterraced&viewType=MAP&mustHave=&dontShow=&furnishTypes=&keywords=
   INDEX_PREFIX: house-index
   INDEX_ALIAS_NAME: house-index
   PARALLELISM: "10"
